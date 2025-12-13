@@ -165,17 +165,19 @@ fi
 if command -v fzf >/dev/null 2>&1; then
     # Try modern --zsh flag first (fzf 0.48.0+)
     if fzf --zsh >/dev/null 2>&1; then
-        eval "$(fzf --zsh)"
+        eval "$(fzf --zsh)" 2>/dev/null || true
     else
         # Fallback for older fzf versions
         [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-        [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
-        [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
+        [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh 2>/dev/null || true
+        [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh 2>/dev/null || true
     fi
 fi
 
 # Инициализирует zoxide для умного перехода по каталогам (замена cd).
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init --cmd cd zsh 2>/dev/null)" 2>/dev/null || true
+fi
 # Переменные для Go: путь к GOPATH и добавление в PATH.
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin:$GOPATH/bin/pdtm
