@@ -908,6 +908,25 @@ print_summary() {
         fi
         echo ""
     fi
+    
+    # Log file location
+    echo ""
+    echo -e "${CYAN}📋 Installation log:${NC} ${YELLOW}$LOG_FILE${NC}"
+    echo -e "${CYAN}If you encountered issues, share this log for troubleshooting.${NC}"
+    echo ""
+    
+    log_to_file "INFO" "Summary printed. Log file: $LOG_FILE"
+    
+    # Auto-switch to zsh
+    if check_command zsh; then
+        echo ""
+        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}║  🚀 Switching to zsh shell automatically...                  ║${NC}"
+        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        log_to_file "INFO" "Auto-switching to zsh"
+        exec zsh
+    fi
 }
 
 # Main execution
