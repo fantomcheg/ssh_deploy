@@ -375,7 +375,7 @@ install_broot() {
         return
     fi
     
-    # Try package manager first
+    # Try package manager first (for newer distros)
     if [ "$HAS_SUDO" = true ]; then
         if install_package "broot" 2>/dev/null; then
             log_success "broot installed via apt"
@@ -383,14 +383,19 @@ install_broot() {
         fi
     fi
     
-    # Install from GitHub releases (portable)
-    log_info "Installing broot from GitHub releases..."
-    local broot_url="https://github.com/Canop/broot/releases/latest/download/broot_x86_64-unknown-linux-musl"
-    mkdir -p "$LOCAL_BIN"
+    # Install from official script (recommended by broot)
+    log_info "Installing broot from official installer..."
     
-    if wget -q "$broot_url" -O "$LOCAL_BIN/broot" 2>/dev/null; then
-        chmod +x "$LOCAL_BIN/broot"
+    # Download and run official installer
+    if curl -o /tmp/broot-install https://dystroy.org/broot/download/x86_64-linux/broot && chmod +x /tmp/broot-install; then
+        # Install to ~/.local/bin
+        mkdir -p "$LOCAL_BIN"
+        mv /tmp/broot-install "$LOCAL_BIN/broot"
         log_success "broot installed to $LOCAL_BIN/broot"
+        
+        # Run broot --install to set up shell function (non-interactive)
+        log_info "Setting up broot shell integration..."
+        "$LOCAL_BIN/broot" --install 2>/dev/null || log_warning "broot shell integration setup may need manual configuration"
     else
         log_warning "Failed to install broot"
     fi
