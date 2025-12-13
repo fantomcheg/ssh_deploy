@@ -952,6 +952,15 @@ main() {
     install_fastfetch
     install_docker
     
+    # Install portable versions if apt failed
+    if ! check_command dust; then
+        install_dust_portable
+    fi
+    
+    if ! check_command dog; then
+        install_dog_portable
+    fi
+    
     # Setup dotfiles
     clone_dotfiles
     setup_path
