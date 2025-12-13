@@ -391,10 +391,10 @@ alias net='sudo bandwhich -s'
 alias dns='sudo ~/scripts/toggle-dns.sh'
 # Поиск файлов с fd (на Ubuntu/Debian это fdfind).
 if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
-    alias fd='fdfind'
+    alias fd='fdfind -HIgp'
+elif command -v fd >/dev/null 2>&1; then
+    alias fds='fd -HIgp'  # fd search with extended options
 fi
-# Расширенные опции для fd/fdfind
-command -v fd >/dev/null 2>&1 && alias fd='fd -HIgp'
 # Загрузка темы для SSH в Alacritty (только если файл существует).
 [ -f ~/.config/alacritty/ssh-theme.sh ] && source ~/.config/alacritty/ssh-theme.sh
 
