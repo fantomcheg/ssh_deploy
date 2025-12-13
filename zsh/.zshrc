@@ -1,11 +1,12 @@
 #####
 # Документация для .zshrc
 
-# Show fastfetch on SSH login (before instant prompt to avoid warnings)
+# Show fastfetch on SSH login (BEFORE instant prompt)
 if command -v fastfetch >/dev/null 2>&1; then
     # Only show on SSH connections (not on local terminal)
     if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
         fastfetch
+        echo ""  # Add blank line after fastfetch
     fi
 fi
 
@@ -481,17 +482,8 @@ if [ -d "$HOME/.nvm" ]; then
     [ -s "/usr/share/nvm/init-nvm.sh" ] && source /usr/share/nvm/init-nvm.sh
 fi
 
-
 # Load AI aliases
 [ -f ~/.zsh_ai_aliases ] && source ~/.zsh_ai_aliases
 [ -f ~/.zsh_mount_aliases ] && source ~/.zsh_mount_aliases
 [ -f ~/.zsh_taskwarrior ] && source ~/.zsh_taskwarrior
 [ -f ~/.zsh_work_aliases ] && source ~/.zsh_work_aliases
-
-# Show fastfetch on login (SSH connections only)
-if command -v fastfetch >/dev/null 2>&1; then
-    # Only show on SSH connections (not on local terminal)
-    if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-        fastfetch
-    fi
-fi
