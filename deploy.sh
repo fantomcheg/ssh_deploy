@@ -306,16 +306,8 @@ install_zsh() {
         fi
     fi
     
-    # EXEC ZSH IMMEDIATELY after zsh installation
-    if check_command zsh; then
-        echo ""
-        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${GREEN}║  🚀 ZSH INSTALLED! SWITCHING NOW...                          ║${NC}"
-        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
-        echo ""
-        log_to_file "INFO" "Switching to zsh immediately after installation"
-        exec zsh -l
-    fi
+    # NOTE: exec zsh moved to END of deployment (after stow)
+    # so that .zshrc is available when zsh starts
 }
 
 install_neovim_portable() {
@@ -826,6 +818,20 @@ main() {
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     log_info "Deployment finished successfully!"
+    
+    # EXEC ZSH at the END - after stow created .zshrc
+    if check_command zsh; then
+        echo ""
+        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}║  🚀 SWITCHING TO ZSH NOW...                                  ║${NC}"
+        echo -e "${GREEN}║     All dotfiles are ready!                                   ║${NC}"
+        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        log_to_file "INFO" "Switching to zsh with 'exec zsh -l'"
+        exec zsh -l
+    else
+        log_warning "zsh not found"
+    fi
 }
 
 # Run main
