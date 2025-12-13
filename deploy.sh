@@ -151,6 +151,26 @@ install_essential_packages() {
             install_package "tree"
         fi
         
+        if $INSTALL_TMUX; then
+            install_package "tmux"
+        fi
+        
+        if $INSTALL_MC; then
+            install_package "mc"
+        fi
+        
+        if $INSTALL_HTOP; then
+            install_package "htop"
+        fi
+        
+        if $INSTALL_DUF; then
+            install_package "duf"
+        fi
+        
+        if $INSTALL_DUST; then
+            install_package "dust"
+        fi
+        
         # eza and zoxide might not be in default repos, will handle separately
     fi
 }
