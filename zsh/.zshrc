@@ -40,8 +40,6 @@ zinit light Aloxaf/fzf-tab
 # Добавляет полезные функции и алиасы:
 # sudo: позволяет повторять команду с префиксом sudo.
 zinit snippet OMZP::sudo
-# command-not-found: предлагает установку пакетов при отсутствии команды.
-zinit snippet OMZP::command-not-found
 # history: улучшает работу с историей команд.
 zinit snippet OMZP::history
 
@@ -104,6 +102,12 @@ cdf() {
   local q="${1:-}"
   local dir
 
+  # Проверяем наличие fzf
+  if ! command -v fzf >/dev/null 2>&1; then
+      echo "fzf not installed"
+      return 1
+  fi
+
   if command -v fd >/dev/null 2>&1; then
     # fd быстрее find
     if [[ -n "$q" ]]; then
@@ -130,7 +134,8 @@ zstyle ':completion:*:*:cd:argument-completer' _expand _complete _fzf_cd
 # Добавляет путь к npm в переменную PATH.
 export PATH="$PATH:/usr/local/share/npm/bin"
 # Настройки по умолчанию для FZF: обратный layout, границы, встроенная информация, символы и предпросмотр.
-export FZF_DEFAULT_OPTS="
+if command -v fzf >/dev/null 2>&1; then
+    export FZF_DEFAULT_OPTS="
   --layout=reverse
   --border
   --info=inline
@@ -139,12 +144,13 @@ export FZF_DEFAULT_OPTS="
   --marker='*'
   --preview '
     if [ -d \"{}\" ]; then
-      eza -T -- \"{}\" | head -20
+      eza -T -- \"{}\" 2>/dev/null | head -20 || ls -la \"{}\"
     else
-      bat --style=numbers --color=always -- \"{}\" 2>/dev/null | head -200
+      bat --style=numbers --color=always -- \"{}\" 2>/dev/null | head -200 || cat \"{}\"
     fi
   '
 "
+fi
 
 ## Инициализация истории
 # Создаёт файл истории, если он пустой.
@@ -154,9 +160,20 @@ fi
 
 ## Интеграции с оболочкой
 # Инициализирует интеграцию FZF с Zsh.
-eval "$(fzf --zsh)"
+if command -v fzf >/dev/null 2>&1; then
+    # Try modern --zsh flag first (fzf 0.48.0+)
+    if fzf --zsh >/dev/null 2>&1; then
+        eval "$(fzf --zsh)"
+    else
+        # Fallback for older fzf versions
+        [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+        [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+        [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
+    fi
+fi
+
 # Инициализирует zoxide для умного перехода по каталогам (замена cd).
-eval "$(zoxide init --cmd cd zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
 # Переменные для Go: путь к GOPATH и добавление в PATH.
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin:$GOPATH/bin/pdtm
