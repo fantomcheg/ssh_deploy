@@ -183,6 +183,45 @@ Configures PATH environment:
 - Informs about lazy.nvim auto-installation
 - Plugins install on first `nvim` launch
 
+##### **run_tests()**
+Comprehensive testing suite that validates installation:
+
+**Core Tools Tests:**
+- zsh, neovim, nnn, stow
+- Version checks for each tool
+
+**File Managers Tests:**
+- broot, mc, tmux
+- Version checks
+
+**Modern CLI Tools Tests:**
+- fzf, bat/batcat, eza, fd/fdfind, zoxide, tree
+- All with version validation
+
+**DevOps Tools Tests:**
+- docker (version check)
+- docker daemon running (docker info)
+- docker group membership
+
+**System Information Tests:**
+- fastfetch (version check)
+
+**Configuration Files Tests:**
+- .zshrc exists
+- nvim/init.lua exists
+- broot/conf.hjson exists
+- fastfetch/config.jsonc exists
+- mc/ini exists
+
+**Output Format:**
+- `✓ PASS` (green) - installed and working
+- `✗ FAIL` (red) - installed but test failed
+- `⊘ SKIP` (yellow) - not installed (optional)
+
+**Summary:**
+- Shows total tests passed
+- Shows failed tests (if any)
+
 ##### **print_summary()**
 - Shows installed tools with versions
 - Lists useful commands and aliases
