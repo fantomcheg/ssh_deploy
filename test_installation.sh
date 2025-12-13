@@ -92,7 +92,6 @@ echo ""
 # File managers
 echo -e "${CYAN}File Managers & System:${NC}"
 log_to_file "=== File Managers & System ==="
-test_tool "broot" "broot" "broot --version"
 test_tool "mc" "mc" "mc --version"
 test_tool "tmux" "tmux" "tmux -V"
 test_tool "htop" "htop" "htop --version"
@@ -175,26 +174,6 @@ else
     echo -e "${RED}✗ FAIL${NC}"
     log_to_file "✗ FAIL: nvim/init.lua missing"
     ((failed_tests++))
-fi
-
-echo -n "Testing broot config... "
-if [ -f "$HOME/.config/broot/conf.hjson" ]; then
-    echo -e "${GREEN}✓ PASS${NC}"
-    log_to_file "✓ PASS: broot/conf.hjson exists"
-    ((passed_tests++))
-else
-    echo -e "${YELLOW}⊘ SKIP${NC}"
-    log_to_file "⊘ SKIP: broot/conf.hjson (optional)"
-fi
-
-echo -n "Testing fastfetch config... "
-if [ -f "$HOME/.config/fastfetch/config.jsonc" ]; then
-    echo -e "${GREEN}✓ PASS${NC}"
-    log_to_file "✓ PASS: fastfetch/config.jsonc exists"
-    ((passed_tests++))
-else
-    echo -e "${YELLOW}⊘ SKIP${NC}"
-    log_to_file "⊘ SKIP: fastfetch/config.jsonc (optional)"
 fi
 
 echo -n "Testing mc config... "

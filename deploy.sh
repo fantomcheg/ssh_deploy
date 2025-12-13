@@ -41,7 +41,6 @@ INSTALL_FD=true
 INSTALL_ZOXIDE=true
 INSTALL_TREE=true
 INSTALL_TMUX=true
-INSTALL_BROOT=true
 INSTALL_FASTFETCH=true
 INSTALL_DOCKER=true
 INSTALL_MC=true  # Midnight Commander with custom theme
@@ -721,12 +720,11 @@ stow_packages() {
     cd "$DOTFILES_DIR" || exit 1
     
     # Only essential packages for server environment
-    # Minimal setup: zsh, nvim, nnn + broot + fastfetch + mc
-    # Excludes: ssh, alacritty, kde, tmux (local/desktop-only tools)
+    # Minimal setup: zsh, nvim, nnn + fastfetch + mc
+    # Excludes: ssh, alacritty, kde, tmux, broot (local/desktop-only tools)
     local packages=("zsh" "nvim" "nnn")
     
     # Add optional packages if installed
-    $INSTALL_BROOT && [ -d "broot" ] && packages+=("broot")
     $INSTALL_FASTFETCH && [ -d "fastfetch" ] && packages+=("fastfetch")
     $INSTALL_MC && [ -d "mc" ] && packages+=("mc")
     
@@ -741,7 +739,7 @@ stow_packages() {
         fi
     done
     
-    log_info "Skipped packages (local-only): ssh, alacritty, kde, tmux"
+    log_info "Skipped packages (local-only): ssh, alacritty, kde, tmux, broot"
 }
 
 setup_nvim_plugins() {
@@ -791,7 +789,6 @@ print_summary() {
     check_command nnn && echo -e "  ${GREEN}✓${NC} nnn"
     check_command tmux && echo -e "  ${GREEN}✓${NC} tmux"
     check_command htop && echo -e "  ${GREEN}✓${NC} htop"
-    check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree view file manager)"
     check_command fastfetch && echo -e "  ${GREEN}✓${NC} fastfetch (system info)"
     check_command fzf && echo -e "  ${GREEN}✓${NC} fzf"
     check_command bat && echo -e "  ${GREEN}✓${NC} bat" || check_command batcat && echo -e "  ${GREEN}✓${NC} batcat (use 'bat' alias)"
@@ -820,7 +817,6 @@ print_summary() {
     echo -e "${CYAN}Useful aliases:${NC}"
     echo -e "  ${YELLOW}n${NC}   - nnn file manager"
     echo -e "  ${YELLOW}mc${NC}  - Midnight Commander (with cd-on-exit)"
-    echo -e "  ${YELLOW}br${NC}  - broot tree view"
     echo -e "  ${YELLOW}so${NC}  - reload .zshrc"
     echo -e "  ${YELLOW}ls${NC}  - eza (modern ls)"
     echo -e "  ${YELLOW}bat${NC} - cat with syntax highlighting"
@@ -870,7 +866,6 @@ main() {
     install_eza
     install_zoxide
     install_tmux
-    install_broot
     install_fastfetch
     install_docker
     
