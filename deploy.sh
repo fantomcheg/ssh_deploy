@@ -665,6 +665,8 @@ run_tests() {
     test_tool "fdfind" "fdfind" "fdfind --version"
     test_tool "zoxide" "zoxide" "zoxide --version"
     test_tool "tree" "tree" "tree --version"
+    test_tool "duf" "duf" "duf --version"
+    test_tool "dust" "dust" "dust --version"
     echo ""
     
     # DevOps tools
@@ -783,6 +785,8 @@ print_summary() {
     check_command fd && echo -e "  ${GREEN}✓${NC} fd" || check_command fdfind && echo -e "  ${GREEN}✓${NC} fdfind (use 'fd' alias)"
     check_command zoxide && echo -e "  ${GREEN}✓${NC} zoxide"
     check_command tree && echo -e "  ${GREEN}✓${NC} tree"
+    check_command duf && echo -e "  ${GREEN}✓${NC} duf (better df)"
+    check_command dust && echo -e "  ${GREEN}✓${NC} dust (better du)"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"

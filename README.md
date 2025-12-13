@@ -43,6 +43,8 @@ That's it! ✨
 - **fd** - Fast and user-friendly alternative to `find`
 - **zoxide** - Smart `cd` command that learns your habits
 - **tree** - Directory tree visualization
+- **duf** - Modern `df` alternative with better visualization
+- **dust** - Modern `du` alternative for disk usage analysis
 
 All tools work seamlessly together and are configured via dotfiles.
 
@@ -300,12 +302,14 @@ After installation:
 exec zsh
 
 # Test installed tools
-which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop broot fastfetch
+which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust broot fastfetch
 
 # Try useful commands
 n              # Launch nnn file manager
 br             # Launch broot tree viewer
 htop           # Interactive process viewer
+df             # Disk usage (duf if installed)
+du             # Directory size (dust if installed)
 fastfetch      # Show system information
 docker ps      # List running containers (after logout/login)
 docker run hello-world  # Test docker installation
@@ -348,6 +352,8 @@ The `.zshrc` includes these aliases:
 - `ls`, `la`, `ll`, `lt` - eza with various options
 - `fd` - works with fdfind or fd binary
 - `bat` - works with batcat or bat binary
+- `df` - aliased to duf (if installed)
+- `du` - aliased to dust (if installed)
 
 ### 🐳 Docker Usage
 
