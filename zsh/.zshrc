@@ -108,12 +108,16 @@ cdf() {
       return 1
   fi
 
-  if command -v fd >/dev/null 2>&1; then
+  # Определяем команду fd (может быть fd или fdfind)
+  local fd_cmd="fd"
+  command -v fd >/dev/null 2>&1 || fd_cmd="fdfind"
+  
+  if command -v "$fd_cmd" >/dev/null 2>&1; then
     # fd быстрее find
     if [[ -n "$q" ]]; then
-      dir="$(fd -t d --hidden --follow "$q" ~ 2>/dev/null | fzf --query="$q")"
+      dir="$($fd_cmd -t d --hidden --follow "$q" ~ 2>/dev/null | fzf --query="$q")"
     else
-      dir="$(fd -t d --hidden --follow . ~ 2>/dev/null | fzf)"
+      dir="$($fd_cmd -t d --hidden --follow . ~ 2>/dev/null | fzf)"
     fi
   else
     # fallback на find
@@ -385,8 +389,12 @@ alias errors='journalctl -b -p err'
 alias net='sudo bandwhich -s'
 # Переключение DNS.
 alias dns='sudo ~/scripts/toggle-dns.sh'
-# Поиск файлов с fd.
-alias fd='fd -HIgp'
+# Поиск файлов с fd (на Ubuntu/Debian это fdfind).
+if command -v fdfind >/dev/null 2>&1 && ! command -v fd >/dev/null 2>&1; then
+    alias fd='fdfind'
+fi
+# Расширенные опции для fd/fdfind
+command -v fd >/dev/null 2>&1 && alias fd='fd -HIgp'
 # Загрузка темы для SSH в Alacritty (только если файл существует).
 [ -f ~/.config/alacritty/ssh-theme.sh ] && source ~/.config/alacritty/ssh-theme.sh
 
