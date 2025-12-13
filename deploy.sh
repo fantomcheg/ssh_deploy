@@ -288,6 +288,7 @@ install_eza() {
     # Try package manager first (might be in newer repos)
     if [ "$HAS_SUDO" = true ]; then
         if install_package "eza" 2>/dev/null; then
+            log_success "eza installed via apt"
             return
         fi
     fi
@@ -305,7 +306,7 @@ install_eza() {
         rm -rf "$temp_dir"
         log_success "eza installed to $LOCAL_BIN/eza"
     else
-        log_warning "Failed to install eza"
+        log_warning "Failed to install eza - will use fallback (exa/ls)"
         rm -rf "$temp_dir"
     fi
 }
@@ -324,10 +325,29 @@ install_zoxide() {
     
     # Install using the official installer script
     log_info "Installing zoxide from official installer..."
+    mkdir -p "$LOCAL_BIN"
     if curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash; then
-        log_success "zoxide installed"
+        log_success "zoxide installed to $LOCAL_BIN/zoxide"
     else
         log_warning "Failed to install zoxide"
+    fi
+}
+
+create_fd_bat_symlinks() {
+    log_info "Setting up fd and bat symlinks..."
+    
+    # Create fd symlink if fdfind exists
+    if check_command fdfind && ! check_command fd; then
+        mkdir -p "$LOCAL_BIN"
+        ln -sf "$(which fdfind)" "$LOCAL_BIN/fd"
+        log_success "fd symlink created (fdfind → fd)"
+    fi
+    
+    # Create bat symlink if batcat exists
+    if check_command batcat && ! check_command bat; then
+        mkdir -p "$LOCAL_BIN"
+        ln -sf "$(which batcat)" "$LOCAL_BIN/bat"
+        log_success "bat symlink created (batcat → bat)"
     fi
 }
 
@@ -404,29 +424,35 @@ setup_path() {
 print_summary() {
     echo ""
     echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}║         ✓ DEPLOYMENT COMPLETE!                               ║${NC}"
+    echo -e "${GREEN}║         ✓ Deployment Complete!                               ║${NC}"
     echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${CYAN}Installed:${NC}"
-    check_command zsh && echo -e "  ${GREEN}✓${NC} zsh"
+    check_command zsh && echo -e "  ${GREEN}✓${NC} zsh (with zinit + powerlevel10k)"
     check_command nvim && echo -e "  ${GREEN}✓${NC} neovim"
     check_command nnn && echo -e "  ${GREEN}✓${NC} nnn"
     check_command fzf && echo -e "  ${GREEN}✓${NC} fzf"
-    check_command bat && echo -e "  ${GREEN}✓${NC} bat" || check_command batcat && echo -e "  ${GREEN}✓${NC} batcat"
+    check_command bat && echo -e "  ${GREEN}✓${NC} bat" || check_command batcat && echo -e "  ${GREEN}✓${NC} batcat (use 'bat' alias)"
     check_command eza && echo -e "  ${GREEN}✓${NC} eza"
-    check_command fd && echo -e "  ${GREEN}✓${NC} fd" || check_command fdfind && echo -e "  ${GREEN}✓${NC} fdfind"
+    check_command fd && echo -e "  ${GREEN}✓${NC} fd" || check_command fdfind && echo -e "  ${GREEN}✓${NC} fdfind (use 'fd' alias)"
     check_command zoxide && echo -e "  ${GREEN}✓${NC} zoxide"
     check_command tree && echo -e "  ${GREEN}✓${NC} tree"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
-    echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes"
-    echo -e "  2. ${YELLOW}Run 'nvim'${NC} to install plugins (first launch)"
-    echo -e "  3. ${YELLOW}Try: fzf, eza, zoxide${NC}"
+    echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
+    echo -e "  2. ${YELLOW}Run 'nvim'${NC} to auto-install plugins (first launch)"
+    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), so (reload zsh), fzf, zoxide"
     echo ""
     echo -e "${CYAN}Configuration:${NC}"
     echo -e "  Dotfiles: ${BLUE}$DOTFILES_DIR${NC}"
     echo -e "  Binaries: ${BLUE}$LOCAL_BIN${NC}"
+    echo ""
+    echo -e "${CYAN}Useful aliases:${NC}"
+    echo -e "  ${YELLOW}n${NC}   - nnn file manager"
+    echo -e "  ${YELLOW}so${NC}  - reload .zshrc"
+    echo -e "  ${YELLOW}ls${NC}  - eza (modern ls)"
+    echo -e "  ${YELLOW}bat${NC} - cat with syntax highlighting"
     echo ""
 }
 
@@ -453,6 +479,10 @@ main() {
     clone_dotfiles
     setup_path
     stow_packages
+    
+    # Create symlinks for fd/bat after stow
+    create_fd_bat_symlinks
+    
     setup_nvim_plugins
     
     print_summary
