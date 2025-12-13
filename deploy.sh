@@ -305,6 +305,17 @@ install_zsh() {
             sudo chsh -s "$(which zsh)" "$USER" && log_success "Default shell changed to zsh"
         fi
     fi
+    
+    # EXEC ZSH IMMEDIATELY after zsh installation
+    if check_command zsh; then
+        echo ""
+        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}║  🚀 ZSH INSTALLED! SWITCHING NOW...                          ║${NC}"
+        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        log_to_file "INFO" "Switching to zsh immediately after installation"
+        exec zsh -l
+    fi
 }
 
 install_neovim_portable() {
@@ -693,18 +704,8 @@ setup_nvim_plugins() {
 }
 
 run_tests() {
-    log_info "Running installation tests..."
-    
-    # Check if test script exists in dotfiles dir
-    if [ -f "$DOTFILES_DIR/test_installation.sh" ]; then
-        log_info "Executing test_installation.sh..."
-        echo ""
-        bash "$DOTFILES_DIR/test_installation.sh"
-        echo ""
-    else
-        log_warning "Test script not found at $DOTFILES_DIR/test_installation.sh, skipping tests"
-        log_info "Tests can be run manually later: bash ~/ssh_deploy/test_installation.sh"
-    fi
+    # Removed - user requested to remove all tests
+    return 0
 }
 
 setup_path() {
@@ -817,9 +818,6 @@ main() {
     
     setup_nvim_plugins
     
-    # Run tests
-    run_tests
-    
     print_summary
     
     echo ""
@@ -828,36 +826,6 @@ main() {
     echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     log_info "Deployment finished successfully!"
-    
-    # Auto-switch to zsh after everything is done
-    if check_command zsh; then
-        echo ""
-        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${GREEN}║  🚀 SWITCHING TO ZSH SHELL NOW...                            ║${NC}"
-        echo -e "${GREEN}║                                                               ║${NC}"
-        echo -e "${GREEN}║     ✅ All aliases will work immediately!                     ║${NC}"
-        echo -e "${GREEN}║     ✅ Type 'so' to reload .zshrc                             ║${NC}"
-        echo -e "${GREEN}║     ✅ Type 'n' for nnn, 'mc' for Midnight Commander          ║${NC}"
-        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
-        echo ""
-        log_to_file "INFO" "Auto-switching to zsh shell with 'exec zsh -l'"
-        
-        # Countdown for visibility
-        for i in 3 2 1; do
-            echo -ne "\r${YELLOW}Switching in $i...${NC}"
-            sleep 1
-        done
-        echo -e "\r${GREEN}✓ Switching now!${NC}   "
-        echo ""
-        
-        # This replaces current shell with zsh
-        exec zsh -l
-    else
-        log_warning "zsh not found - cannot switch shells"
-        echo ""
-        echo -e "${YELLOW}⚠ Warning: zsh not found. Please install zsh manually.${NC}"
-        echo ""
-    fi
 }
 
 # Run main
