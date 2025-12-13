@@ -413,7 +413,7 @@ install_fastfetch() {
         return
     fi
     
-    # Try package manager first
+    # Try package manager first (available on newer Ubuntu/Debian)
     if [ "$HAS_SUDO" = true ]; then
         if install_package "fastfetch" 2>/dev/null; then
             log_success "fastfetch installed via apt"
@@ -421,34 +421,32 @@ install_fastfetch() {
         fi
     fi
     
-    # Install from GitHub releases (portable AppImage)
+    # Install from GitHub releases (tar.gz archive)
     log_info "Installing fastfetch from GitHub releases..."
-    local fastfetch_url="https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.deb"
     local temp_dir=$(mktemp -d)
+    local fastfetch_version="2.30.1"  # Stable version known to work
+    local fastfetch_url="https://github.com/fastfetch-cli/fastfetch/releases/download/${fastfetch_version}/fastfetch-linux-amd64.tar.gz"
     
-    if [ "$HAS_SUDO" = true ]; then
-        # Install deb package if sudo available
-        if wget -q "$fastfetch_url" -O "$temp_dir/fastfetch.deb" 2>/dev/null; then
-            if sudo dpkg -i "$temp_dir/fastfetch.deb" 2>/dev/null; then
-                log_success "fastfetch installed via deb package"
-                rm -rf "$temp_dir"
-                return
-            fi
+    if wget -q "$fastfetch_url" -O "$temp_dir/fastfetch.tar.gz" 2>/dev/null; then
+        cd "$temp_dir"
+        tar -xzf fastfetch.tar.gz
+        
+        # Find the binary in extracted archive
+        if [ -f "fastfetch-linux-amd64/usr/bin/fastfetch" ]; then
+            mkdir -p "$LOCAL_BIN"
+            cp "fastfetch-linux-amd64/usr/bin/fastfetch" "$LOCAL_BIN/"
+            chmod +x "$LOCAL_BIN/fastfetch"
+            log_success "fastfetch installed to $LOCAL_BIN/fastfetch"
+        else
+            log_warning "fastfetch binary not found in archive"
         fi
-    fi
-    
-    # Fallback: try AppImage
-    local appimage_url="https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.AppImage"
-    mkdir -p "$LOCAL_BIN"
-    
-    if wget -q "$appimage_url" -O "$LOCAL_BIN/fastfetch" 2>/dev/null; then
-        chmod +x "$LOCAL_BIN/fastfetch"
-        log_success "fastfetch AppImage installed to $LOCAL_BIN/fastfetch"
+        
+        cd - > /dev/null
+        rm -rf "$temp_dir"
     else
-        log_warning "Failed to install fastfetch"
+        log_warning "Failed to download fastfetch"
+        rm -rf "$temp_dir"
     fi
-    
-    rm -rf "$temp_dir"
 }
 
 install_docker() {
