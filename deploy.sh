@@ -660,7 +660,7 @@ stow_packages() {
     
     # Only essential packages for server environment
     # Minimal setup: zsh, nvim, nnn + fastfetch + mc
-    # Excludes: ssh, alacritty, kde, tmux, broot (local/desktop-only tools)
+    # Excludes: ssh, alacritty, kde, tmux (local/desktop-only tools)
     local packages=("zsh" "nvim" "nnn")
     
     # Add optional packages if installed
@@ -678,7 +678,7 @@ stow_packages() {
         fi
     done
     
-    log_info "Skipped packages (local-only): ssh, alacritty, kde, tmux, broot"
+    log_info "Skipped packages (local-only): ssh, alacritty, kde, tmux"
 }
 
 setup_nvim_plugins() {
@@ -747,7 +747,7 @@ print_summary() {
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
     echo -e "  2. ${YELLOW}Run 'nvim'${NC} to auto-install plugins (first launch)"
-    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), br (broot), fastfetch"
+    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), mc, fastfetch"
     echo ""
     echo -e "${CYAN}Configuration:${NC}"
     echo -e "  Dotfiles: ${BLUE}$DOTFILES_DIR${NC}"
