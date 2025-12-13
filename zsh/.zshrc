@@ -275,7 +275,7 @@ export NNN_FIFO=/tmp/nnn.fifo
 # Пейджер для NNN.
 export NNN_PAGER='more -lfp'
 # Скрипт для выхода в текущий каталог.
-source $HOME/.local/zsh/quitcd.bash_sh_zsh
+[ -f "$HOME/.local/zsh/quitcd.bash_sh_zsh" ] && source "$HOME/.local/zsh/quitcd.bash_sh_zsh"
 # Цветовая схема для NNN.
 export NNN_FCOLORS="D4DEB778E79F9F67D2E5E5D2"
 # Включение корзины.
@@ -309,13 +309,15 @@ nnn_cd()
 # Вызов функции при выходе из оболочки.
 trap nnn_cd EXIT
 
-## Настройки Pyenv
-# Каталог установки Pyenv.
-export PYENV_ROOT="$HOME/.pyenv"
-# Добавление Pyenv в PATH, если команда доступна.
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-# Инициализация Pyenv.
-eval "$(pyenv init -)"
+## Настройки Pyenv (только если установлен)
+if [ -d "$HOME/.pyenv" ]; then
+    # Каталог установки Pyenv.
+    export PYENV_ROOT="$HOME/.pyenv"
+    # Добавление Pyenv в PATH, если команда доступна.
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    # Инициализация Pyenv.
+    eval "$(pyenv init -)"
+fi
 
 ## Настройки Wayland
 # Настройка QT для использования Wayland.
@@ -362,14 +364,14 @@ alias net='sudo bandwhich -s'
 alias dns='sudo ~/scripts/toggle-dns.sh'
 # Поиск файлов с fd.
 alias fd='fd -HIgp'
-# Загрузка темы для SSH в Alacritty.
-source ~/.config/alacritty/ssh-theme.sh
+# Загрузка темы для SSH в Alacritty (только если файл существует).
+[ -f ~/.config/alacritty/ssh-theme.sh ] && source ~/.config/alacritty/ssh-theme.sh
 
 
 
 ## Справка и вики
-# Настройка пейджера для man.
-eval "$(manpager)"
+# Настройка пейджера для man (если manpager установлен).
+command -v manpager >/dev/null 2>&1 && eval "$(manpager)"
 # Функция для просмотра man-страниц в Neovim.
 vman() {
   man "$@" | nvim -R -c 'set ft=man' -
@@ -397,8 +399,8 @@ alias test='~/scripts/test.sh'
 
 
 ## Broot
-# Подключение лаунчера Broot.
-source /home/xrapid/.config/broot/launcher/bash/br
+# Подключение лаунчера Broot (только если установлен).
+[ -f ~/.config/broot/launcher/bash/br ] && source ~/.config/broot/launcher/bash/br
 # Алиасы для запуска Broot.
 alias b='br'
 alias bh='br --hidden'
@@ -429,9 +431,14 @@ urlencode() {
  printf "%s" "$1" |  jq -sRr @uri
 }
 
-alias zap='/usr/share/zaproxy/zap.sh -cmd'
-export NVM_DIR="$HOME/.nvm"
-source /usr/share/nvm/init-nvm.sh
+# ZAP (только если установлен)
+[ -f /usr/share/zaproxy/zap.sh ] && alias zap='/usr/share/zaproxy/zap.sh -cmd'
+
+# NVM (только если установлен)
+if [ -d "$HOME/.nvm" ]; then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "/usr/share/nvm/init-nvm.sh" ] && source /usr/share/nvm/init-nvm.sh
+fi
 
 
 # Load AI aliases
