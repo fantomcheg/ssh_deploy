@@ -1,0 +1,120 @@
+###############################################################
+# NNN-style color scheme for broot
+# Colors synchronized with nnn file manager
+#
+# Based on NNN_FCOLORS="D4DEB778E79F9F67D2E5E5D2"
+# - Directories: brightblue (B7)
+# - Executables: brightmagenta (D2)
+# - Archives: brightmagenta (D2)
+# - Symlinks: brightcyan (78)
+# - Broken symlinks: brightred (E7)
+# - Regular files: brightyellow (DE)
+# - Media: brightcyan (E5)
+###############################################################
+skin: {
+    default: gray(22) none / gray(20) none
+    tree: gray(8) None / gray(4) None
+    parent: gray(18) None / gray(13) None
+    
+    # File types - matching nnn colors
+    # DE = xterm 222 (light yellow/almost white) - regular files
+    file: gray(22) None / gray(20) None
+    # brightblue - directories (B7)
+    directory: ansi(blue) None bold / ansi(blue) None bold
+    # brightmagenta - executables (D2)
+    exe: ansi(magenta) None / ansi(magenta) None
+    # brightcyan - symlinks (78)
+    link: ansi(cyan) None / ansi(cyan) None
+    
+    # Special states
+    pruning: gray(12) None Italic
+    
+    # Permissions
+    perm__: gray(5) None
+    perm_r: ansi(94) None
+    perm_w: ansi(132) None
+    perm_x: ansi(65) None
+    
+    # Ownership
+    owner: ansi(138) None
+    group: ansi(131) None
+    
+    # Metadata
+    count: ansi(138) gray(4)
+    dates: ansi(66) None
+    sparse: ansi(214) None
+    
+    # Search/Content
+    content_extract: ansi(29) None
+    content_match: ansi(34) None
+    char_match: Green None
+    
+    # Device IDs
+    device_id_major: ansi(138) None
+    device_id_sep: ansi(102) None
+    device_id_minor: ansi(138) None
+    
+    # Git status
+    git_branch: ansi(178) None
+    git_insertions: ansi(28) None
+    git_deletions: ansi(160) None
+    git_status_current: gray(5) None
+    git_status_modified: ansi(28) None
+    git_status_new: ansi(94) None bold
+    git_status_ignored: gray(17) None
+    git_status_conflicted: ansi(88) None
+    git_status_other: ansi(88) None
+    
+    # Selection - blue background like in mc
+    selected_line: None ansi(blue) / None gray(4)
+    
+    # Errors
+    file_error: Red None
+    
+    # Flags
+    flag_label: gray(15) gray(2)
+    flag_value: ansi(178) gray(2) bold
+    
+    # Input
+    input: White gray(2) / gray(15) None
+    
+    # Status bar
+    status_error: gray(22) ansi(124)
+    status_job: ansi(220) gray(5)
+    status_normal: gray(20) gray(4) / gray(2) gray(2)
+    status_italic: ansi(178) gray(4) / gray(2) gray(2)
+    status_bold: ansi(178) gray(4) bold / gray(2) gray(2)
+    status_code: ansi(229) gray(4) / gray(2) gray(2)
+    status_ellipsis: gray(19) gray(1) / gray(2) gray(2)
+    
+    # Purpose (command mode)
+    purpose_normal: gray(20) gray(2)
+    purpose_italic: ansi(178) gray(2)
+    purpose_bold: ansi(178) gray(2) bold
+    purpose_ellipsis: gray(20) gray(2)
+    
+    # Scrollbar
+    scrollbar_track: gray(7) None / gray(4) None
+    scrollbar_thumb: gray(22) None / gray(14) None
+    
+    # Help
+    help_paragraph: gray(20) None
+    help_bold: ansi(178) None bold
+    help_italic: ansi(229) None
+    help_code: gray(21) gray(3)
+    help_headers: ansi(178) None
+    help_table_border: ansi(239) None
+    
+    # Preview
+    preview: gray(20) gray(1) / gray(18) gray(2)
+    preview_title: gray(23) gray(2) / gray(21) gray(2)
+    preview_line_number: gray(12) gray(3)
+    preview_match: None ansi(29)
+    
+    # Hex preview
+    hex_null: gray(11) None
+    hex_ascii_graphic: gray(18) None
+    hex_ascii_whitespace: ansi(143) None
+    hex_ascii_other: ansi(215) None
+    hex_non_ascii: ansi(167) None
+}

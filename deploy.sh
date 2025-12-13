@@ -36,6 +36,9 @@ INSTALL_EZA=true
 INSTALL_FD=true
 INSTALL_ZOXIDE=true
 INSTALL_TREE=true
+INSTALL_TMUX=true
+INSTALL_BROOT=true
+INSTALL_FASTFETCH=true
 
 # Helper functions
 print_banner() {
@@ -333,6 +336,109 @@ install_zoxide() {
     fi
 }
 
+install_tmux() {
+    if ! $INSTALL_TMUX; then
+        return
+    fi
+    
+    log_info "Setting up tmux..."
+    
+    if check_command tmux; then
+        log_success "tmux already installed"
+        return
+    fi
+    
+    # Install via package manager (default config)
+    if [ "$HAS_SUDO" = true ]; then
+        install_package "tmux"
+    else
+        log_warning "tmux requires sudo to install"
+    fi
+}
+
+install_broot() {
+    if ! $INSTALL_BROOT; then
+        return
+    fi
+    
+    log_info "Setting up broot..."
+    
+    if check_command broot; then
+        log_success "broot already installed"
+        return
+    fi
+    
+    # Try package manager first
+    if [ "$HAS_SUDO" = true ]; then
+        if install_package "broot" 2>/dev/null; then
+            log_success "broot installed via apt"
+            return
+        fi
+    fi
+    
+    # Install from GitHub releases (portable)
+    log_info "Installing broot from GitHub releases..."
+    local broot_url="https://github.com/Canop/broot/releases/latest/download/broot_x86_64-unknown-linux-musl"
+    mkdir -p "$LOCAL_BIN"
+    
+    if wget -q "$broot_url" -O "$LOCAL_BIN/broot" 2>/dev/null; then
+        chmod +x "$LOCAL_BIN/broot"
+        log_success "broot installed to $LOCAL_BIN/broot"
+    else
+        log_warning "Failed to install broot"
+    fi
+}
+
+install_fastfetch() {
+    if ! $INSTALL_FASTFETCH; then
+        return
+    fi
+    
+    log_info "Setting up fastfetch..."
+    
+    if check_command fastfetch; then
+        log_success "fastfetch already installed"
+        return
+    fi
+    
+    # Try package manager first
+    if [ "$HAS_SUDO" = true ]; then
+        if install_package "fastfetch" 2>/dev/null; then
+            log_success "fastfetch installed via apt"
+            return
+        fi
+    fi
+    
+    # Install from GitHub releases (portable AppImage)
+    log_info "Installing fastfetch from GitHub releases..."
+    local fastfetch_url="https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.deb"
+    local temp_dir=$(mktemp -d)
+    
+    if [ "$HAS_SUDO" = true ]; then
+        # Install deb package if sudo available
+        if wget -q "$fastfetch_url" -O "$temp_dir/fastfetch.deb" 2>/dev/null; then
+            if sudo dpkg -i "$temp_dir/fastfetch.deb" 2>/dev/null; then
+                log_success "fastfetch installed via deb package"
+                rm -rf "$temp_dir"
+                return
+            fi
+        fi
+    fi
+    
+    # Fallback: try AppImage
+    local appimage_url="https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.AppImage"
+    mkdir -p "$LOCAL_BIN"
+    
+    if wget -q "$appimage_url" -O "$LOCAL_BIN/fastfetch" 2>/dev/null; then
+        chmod +x "$LOCAL_BIN/fastfetch"
+        log_success "fastfetch AppImage installed to $LOCAL_BIN/fastfetch"
+    else
+        log_warning "Failed to install fastfetch"
+    fi
+    
+    rm -rf "$temp_dir"
+}
+
 create_fd_bat_symlinks() {
     log_info "Setting up fd and bat symlinks..."
     
@@ -380,9 +486,13 @@ stow_packages() {
     cd "$DOTFILES_DIR" || exit 1
     
     # Only essential packages for server environment
-    # Minimal setup: zsh, nvim, nnn
-    # Excludes: ssh, alacritty, kde, mc, broot, tmux (local-only tools)
+    # Minimal setup: zsh, nvim, nnn + broot + fastfetch
+    # Excludes: ssh, alacritty, kde, mc, tmux (local/desktop-only tools)
     local packages=("zsh" "nvim" "nnn")
+    
+    # Add optional packages if installed
+    $INSTALL_BROOT && [ -d "broot" ] && packages+=("broot")
+    $INSTALL_FASTFETCH && [ -d "fastfetch" ] && packages+=("fastfetch")
     
     for package in "${packages[@]}"; do
         if [ -d "$package" ]; then
@@ -395,7 +505,7 @@ stow_packages() {
         fi
     done
     
-    log_info "Skipped packages (local-only): ssh, alacritty, kde, mc, broot, tmux"
+    log_info "Skipped packages (local-only): ssh, alacritty, kde, mc, tmux"
 }
 
 setup_nvim_plugins() {
@@ -431,6 +541,9 @@ print_summary() {
     check_command zsh && echo -e "  ${GREEN}✓${NC} zsh (with zinit + powerlevel10k)"
     check_command nvim && echo -e "  ${GREEN}✓${NC} neovim"
     check_command nnn && echo -e "  ${GREEN}✓${NC} nnn"
+    check_command tmux && echo -e "  ${GREEN}✓${NC} tmux"
+    check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree view file manager)"
+    check_command fastfetch && echo -e "  ${GREEN}✓${NC} fastfetch (system info)"
     check_command fzf && echo -e "  ${GREEN}✓${NC} fzf"
     check_command bat && echo -e "  ${GREEN}✓${NC} bat" || check_command batcat && echo -e "  ${GREEN}✓${NC} batcat (use 'bat' alias)"
     check_command eza && echo -e "  ${GREEN}✓${NC} eza"
@@ -442,7 +555,7 @@ print_summary() {
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
     echo -e "  2. ${YELLOW}Run 'nvim'${NC} to auto-install plugins (first launch)"
-    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), so (reload zsh), fzf, zoxide"
+    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), br (broot), fastfetch"
     echo ""
     echo -e "${CYAN}Configuration:${NC}"
     echo -e "  Dotfiles: ${BLUE}$DOTFILES_DIR${NC}"
@@ -450,9 +563,13 @@ print_summary() {
     echo ""
     echo -e "${CYAN}Useful aliases:${NC}"
     echo -e "  ${YELLOW}n${NC}   - nnn file manager"
+    echo -e "  ${YELLOW}br${NC}  - broot tree view"
     echo -e "  ${YELLOW}so${NC}  - reload .zshrc"
     echo -e "  ${YELLOW}ls${NC}  - eza (modern ls)"
     echo -e "  ${YELLOW}bat${NC} - cat with syntax highlighting"
+    echo ""
+    echo -e "${CYAN}System info:${NC}"
+    echo -e "  Run ${YELLOW}fastfetch${NC} to see beautiful system information"
     echo ""
 }
 
@@ -474,6 +591,9 @@ main() {
     install_mc
     install_eza
     install_zoxide
+    install_tmux
+    install_broot
+    install_fastfetch
     
     # Setup dotfiles
     clone_dotfiles
