@@ -24,6 +24,10 @@ DOTFILES_DIR="$HOME/ssh_deploy"
 LOCAL_BIN="$HOME/.local/bin"
 LOCAL_SHARE="$HOME/.local/share"
 
+# Logging
+LOG_FILE="$HOME/ssh_deploy_install.log"
+LOG_DIR="$(dirname "$LOG_FILE")"
+
 # Flags
 HAS_SUDO=false
 INSTALL_ZSH=true
@@ -50,28 +54,53 @@ INSTALL_MTR=true
 INSTALL_DOG=true
 
 # Helper functions
+init_logging() {
+    # Create log file
+    mkdir -p "$(dirname "$LOG_FILE")"
+    echo "═══════════════════════════════════════════════════════════════" > "$LOG_FILE"
+    echo "SSH Deploy Installation Log" >> "$LOG_FILE"
+    echo "Date: $(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE"
+    echo "User: $USER" >> "$LOG_FILE"
+    echo "Hostname: $(hostname)" >> "$LOG_FILE"
+    echo "OS: $(cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2)" >> "$LOG_FILE"
+    echo "═══════════════════════════════════════════════════════════════" >> "$LOG_FILE"
+    echo "" >> "$LOG_FILE"
+}
+
+log_to_file() {
+    local level="$1"
+    shift
+    local message="$@"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$level] $message" >> "$LOG_FILE"
+}
+
 print_banner() {
     echo -e "${CYAN}"
     echo "╔═══════════════════════════════════════════════════════════════╗"
     echo "║         🚀 Xrapid's Dotfiles Deployment                      ║"
     echo "╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
+    log_to_file "INFO" "Starting deployment"
 }
 
 log_info() {
     echo -e "${BLUE}ℹ${NC} $1"
+    log_to_file "INFO" "$1"
 }
 
 log_success() {
     echo -e "${GREEN}✓${NC} $1"
+    log_to_file "SUCCESS" "$1"
 }
 
 log_warning() {
     echo -e "${YELLOW}⚠${NC} $1"
+    log_to_file "WARNING" "$1"
 }
 
 log_error() {
     echo -e "${RED}✗${NC} $1"
+    log_to_file "ERROR" "$1"
 }
 
 check_command() {
@@ -130,7 +159,11 @@ install_essential_packages() {
     
     if [ "$HAS_SUDO" = true ]; then
         log_info "Updating package lists..."
-        sudo apt-get update -qq
+        if sudo apt-get update -qq >> "$LOG_FILE" 2>&1; then
+            log_success "Package lists updated"
+        else
+            log_warning "Failed to update package lists"
+        fi
         
         # Essential tools
         install_package "git"
