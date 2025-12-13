@@ -22,6 +22,13 @@ That's it! ✨
 - **neovim** - Modern text editor with lazy.nvim plugin manager
 - **nnn** - Lightning-fast terminal file manager with plugins
 
+### DevOps & Containers
+- **docker** - Container platform with Docker Compose
+  - Installed from official Docker repository
+  - User automatically added to docker group (no sudo needed)
+  - Includes docker-compose plugin
+- **tmux** - Terminal multiplexer (default config)
+
 ### File Managers & Viewers
 - **broot** - Tree-view file manager with fuzzy search (like `tree` on steroids)
 - **tmux** - Terminal multiplexer (default config)
@@ -107,6 +114,21 @@ Installs tmux terminal multiplexer:
 - Uses default configuration
 - Skips if no sudo available
 
+##### **install_docker()**
+Installs Docker container platform:
+- Uses official Docker repository (not snap)
+- Installs docker-ce, docker-ce-cli, containerd, docker-compose plugin
+- Automatically adds current user to docker group
+- Enables and starts docker service
+- Runs hello-world test to verify installation
+- **Important**: User needs to logout/login for docker group to take effect
+- Without sudo: skips installation with warning
+
+Key features:
+- No sudo needed for docker commands after logout/login
+- Includes docker-compose v2 (plugin)
+- Official Docker packages (latest stable)
+
 ##### **install_broot()**
 Installs broot tree-view file manager:
 - Tries apt package first
@@ -183,9 +205,12 @@ INSTALL_TREE=true
 INSTALL_TMUX=true
 INSTALL_BROOT=true
 INSTALL_FASTFETCH=true
+INSTALL_DOCKER=true
 ```
 
 Set to `false` to skip installation of specific tools.
+
+**Note on Docker**: Docker installation requires sudo and automatically adds user to docker group. You'll need to logout/login after installation to use docker without sudo.
 
 ---
 
@@ -242,6 +267,8 @@ which zsh nvim nnn fzf bat eza fd zoxide tree tmux broot fastfetch
 n              # Launch nnn file manager
 br             # Launch broot tree viewer
 fastfetch      # Show system information
+docker ps      # List running containers (after logout/login)
+docker run hello-world  # Test docker installation
 so             # Reload .zshrc
 ls             # eza with icons (if installed)
 bat --help     # cat with syntax highlighting
@@ -250,6 +277,25 @@ z <dir>        # zoxide smart cd (after visiting some dirs)
 
 # Open nvim to trigger plugin installation
 nvim
+```
+
+### 🐳 Docker Post-Install
+
+After installation, Docker is ready but you need to **logout/login** for group membership to take effect:
+
+```bash
+# Check if you're in docker group
+groups | grep docker
+
+# If not shown, logout and login again
+exit
+
+# After re-login, test docker without sudo
+docker ps
+docker run hello-world
+
+# Docker Compose is available as a plugin
+docker compose version
 ```
 
 ### 🔥 Useful Aliases
@@ -262,6 +308,26 @@ The `.zshrc` includes these aliases:
 - `ls`, `la`, `ll`, `lt` - eza with various options
 - `fd` - works with fdfind or fd binary
 - `bat` - works with batcat or bat binary
+
+### 🐳 Docker Usage
+
+Docker is configured for **no-sudo usage**:
+
+```bash
+# After logout/login, these work without sudo
+docker ps
+docker run -d nginx
+docker compose up -d
+docker images
+docker logs <container>
+
+# Docker Compose v2 (plugin)
+docker compose version
+docker compose up
+docker compose down
+```
+
+**Note**: If docker commands require sudo, you need to logout/login to activate docker group membership.
 
 ### 📸 Broot Features
 

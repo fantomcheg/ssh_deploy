@@ -39,6 +39,7 @@ INSTALL_TREE=true
 INSTALL_TMUX=true
 INSTALL_BROOT=true
 INSTALL_FASTFETCH=true
+INSTALL_DOCKER=true
 
 # Helper functions
 print_banner() {
@@ -439,6 +440,80 @@ install_fastfetch() {
     rm -rf "$temp_dir"
 }
 
+install_docker() {
+    if ! $INSTALL_DOCKER; then
+        return
+    fi
+    
+    log_info "Setting up Docker..."
+    
+    if check_command docker; then
+        log_success "Docker already installed"
+        # Still check and add user to docker group
+        if groups | grep -q docker; then
+            log_success "User already in docker group"
+        else
+            log_warning "User not in docker group, trying to add..."
+            if [ "$HAS_SUDO" = true ]; then
+                sudo usermod -aG docker "$USER"
+                log_success "User added to docker group - logout/login required to apply"
+            else
+                log_warning "No sudo - cannot add user to docker group"
+            fi
+        fi
+        return
+    fi
+    
+    if [ "$HAS_SUDO" != true ]; then
+        log_warning "Docker requires sudo to install"
+        return
+    fi
+    
+    log_info "Installing Docker from official repository..."
+    
+    # Install prerequisites
+    sudo apt-get update -qq
+    sudo apt-get install -y ca-certificates curl gnupg lsb-release 2>/dev/null
+    
+    # Add Docker's official GPG key
+    sudo install -m 0755 -d /etc/apt/keyrings
+    if [ -f /etc/apt/keyrings/docker.gpg ]; then
+        sudo rm /etc/apt/keyrings/docker.gpg
+    fi
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    
+    # Add Docker repository
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    
+    # Install Docker Engine
+    sudo apt-get update -qq
+    if sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null; then
+        log_success "Docker installed successfully"
+        
+        # Start and enable Docker service
+        sudo systemctl enable docker 2>/dev/null
+        sudo systemctl start docker 2>/dev/null
+        
+        # Add current user to docker group
+        log_info "Adding user to docker group..."
+        sudo usermod -aG docker "$USER"
+        log_success "User added to docker group"
+        log_warning "You need to logout/login for docker group to take effect"
+        
+        # Test docker (with sudo since group not yet active)
+        if sudo docker run --rm hello-world >/dev/null 2>&1; then
+            log_success "Docker test successful"
+        else
+            log_warning "Docker installed but test failed"
+        fi
+    else
+        log_error "Failed to install Docker"
+    fi
+}
+
 create_fd_bat_symlinks() {
     log_info "Setting up fd and bat symlinks..."
     
@@ -551,6 +626,7 @@ print_summary() {
     check_command zoxide && echo -e "  ${GREEN}✓${NC} zoxide"
     check_command tree && echo -e "  ${GREEN}✓${NC} tree"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
+    check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
@@ -571,6 +647,19 @@ print_summary() {
     echo -e "${CYAN}System info:${NC}"
     echo -e "  Run ${YELLOW}fastfetch${NC} to see beautiful system information"
     echo ""
+    
+    # Docker specific notes
+    if check_command docker; then
+        echo -e "${CYAN}Docker:${NC}"
+        echo -e "  ${GREEN}✓${NC} Docker installed"
+        if groups | grep -q docker; then
+            echo -e "  ${GREEN}✓${NC} User in docker group - ready to use"
+        else
+            echo -e "  ${YELLOW}⚠${NC} User added to docker group"
+            echo -e "  ${RED}➜${NC} Run ${YELLOW}exec zsh${NC} or logout/login to activate docker group"
+        fi
+        echo ""
+    fi
 }
 
 # Main execution
@@ -594,6 +683,7 @@ main() {
     install_tmux
     install_broot
     install_fastfetch
+    install_docker
     
     # Setup dotfiles
     clone_dotfiles
