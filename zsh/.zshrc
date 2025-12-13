@@ -1,6 +1,20 @@
 #####
 # Документация для .zshrc
 
+# DEBUG: Enable detailed logging
+ZSHRC_DEBUG=true
+ZSHRC_LOG="$HOME/.zshrc_load.log"
+
+debug_log() {
+    if [ "$ZSHRC_DEBUG" = true ]; then
+        echo "[$(date '+%H:%M:%S.%3N')] $1" | tee -a "$ZSHRC_LOG"
+    fi
+}
+
+# Start logging
+echo "==================== ZSHRC LOAD START ====================" > "$ZSHRC_LOG"
+debug_log "START: Loading .zshrc"
+
 ## Инициализация Powerlevel10k
 # Включает мгновенный промпт Powerlevel10k для ускорения загрузки оболочки.
 # Код, требующий ввода (например, пароли или подтверждения), должен быть размещен выше этого блока.
@@ -42,16 +56,23 @@ zinit light Aloxaf/fzf-tab
 
 ## Настройка завершения команд
 # Загружает и инициализирует систему автодополнения Zsh.
+debug_log "STEP 9: Running compinit"
 autoload -Uz compinit && compinit
+debug_log "STEP 9: Done"
+
 # Применяет все изменения Zinit без вывода сообщений.
+debug_log "STEP 10: Running zinit cdreplay"
 zinit cdreplay -q
+debug_log "STEP 10: Done"
 
 ## Настройка Powerlevel10k
 # Загружает конфигурацию Powerlevel10k, если файл существует.
+debug_log "STEP 11: Loading .p10k.zsh"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
+debug_log "STEP 11: Done"
 
 ## Настройки истории
+debug_log "STEP 12: Configuring history"
 # Размер истории команд в памяти.
 HISTSIZE=100000
 # Файл для хранения истории команд.
@@ -73,9 +94,11 @@ setopt hist_find_no_dups
 setopt inc_append_history
 setopt share_history
 alias h='fc -l -50'
+debug_log "STEP 12: Done"
 
 
 ## Стили завершения
+debug_log "STEP 13: Configuring completion styles"
 # Делает автодополнение нечувствительным к регистру.
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 # Использует цвета из переменной LS_COLORS для автодополнения.
@@ -85,8 +108,10 @@ zstyle ':completion:*' menu no
 # Настройки предпросмотра для fzf-tab: показывает содержимое каталогов и файлов.
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+debug_log "STEP 13: Done"
 
 ## Функции
+debug_log "STEP 14: Defining functions"
 # Функция для перехода в каталог с помощью FZF с предпросмотром дерева файлов.
 _fzf_cd() {
   local dir
@@ -154,14 +179,18 @@ if command -v fzf >/dev/null 2>&1; then
   '
 "
 fi
+debug_log "STEP 14: Done"
 
 ## Инициализация истории
+debug_log "STEP 15: Initializing history file"
 # Создаёт файл истории, если он пустой.
 if [[ ! -s ~/.zsh_history ]]; then
   >| ~/.zsh_history
 fi
+debug_log "STEP 15: Done"
 
 ## Интеграции с оболочкой
+debug_log "STEP 16: Integrating with shell tools (fzf, zoxide)"
 # Инициализирует интеграцию FZF с Zsh.
 if command -v fzf >/dev/null 2>&1; then
     # Try modern --zsh flag first (fzf 0.48.0+)
@@ -179,7 +208,10 @@ fi
 if command -v zoxide >/dev/null 2>&1; then
     eval "$(zoxide init --cmd cd zsh 2>/dev/null)" 2>/dev/null || true
 fi
+debug_log "STEP 16: Done"
+
 # Переменные для Go: путь к GOPATH и добавление в PATH.
+debug_log "STEP 17: Setting up environment variables"
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin:$GOPATH/bin/pdtm
 
@@ -191,8 +223,10 @@ export FZF_DEFAULT_COMMAND="find ~+ -type f"
 ## Пути для pdtm
 # Добавляет путь к pdtm в PATH.
 export PATH=$PATH:/home/xrapid/.pdtm/go/bin
+debug_log "STEP 17: Done"
 
 ## Псевдонимы Tmux
+debug_log "STEP 18: Setting up aliases"
 # Убивает сервер Tmux.
 alias tmuxk='tmux kill-server'
 # Короткий алиас для убийства сервера Tmux.
