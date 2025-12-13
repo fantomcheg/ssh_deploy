@@ -41,6 +41,11 @@ INSTALL_BROOT=true
 INSTALL_FASTFETCH=true
 INSTALL_DOCKER=true
 INSTALL_MC=true  # Midnight Commander with custom theme
+INSTALL_HTOP=true
+INSTALL_DUF=true
+INSTALL_DUST=true
+INSTALL_JQ=true
+INSTALL_RIPGREP=true
 
 # Helper functions
 print_banner() {
