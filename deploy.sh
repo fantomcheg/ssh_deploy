@@ -693,12 +693,15 @@ setup_nvim_plugins() {
 run_tests() {
     log_info "Running installation tests..."
     
-    # Check if test script exists
+    # Check if test script exists in dotfiles dir
     if [ -f "$DOTFILES_DIR/test_installation.sh" ]; then
         log_info "Executing test_installation.sh..."
+        echo ""
         bash "$DOTFILES_DIR/test_installation.sh"
+        echo ""
     else
-        log_warning "Test script not found, skipping tests"
+        log_warning "Test script not found at $DOTFILES_DIR/test_installation.sh, skipping tests"
+        log_info "Tests can be run manually later: bash ~/ssh_deploy/test_installation.sh"
     fi
 }
 
@@ -828,15 +831,22 @@ main() {
     
     print_summary
     
+    echo ""
+    log_info "Deployment finished successfully!"
+    
     # Auto-switch to zsh after everything is done
     if check_command zsh; then
         echo ""
         echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${GREEN}║  🚀 Switching to zsh shell automatically...                  ║${NC}"
+        echo -e "${GREEN}║  🚀 Switching to zsh shell in 2 seconds...                   ║${NC}"
+        echo -e "${GREEN}║     All aliases will be available immediately!                ║${NC}"
         echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
         echo ""
         log_to_file "INFO" "Auto-switching to zsh shell"
-        exec zsh
+        sleep 2
+        exec zsh -l
+    else
+        log_warning "zsh not found - cannot switch shells"
     fi
 }
 
