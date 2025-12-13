@@ -826,17 +826,6 @@ print_summary() {
     echo ""
     
     log_to_file "INFO" "Summary printed. Log file: $LOG_FILE"
-    
-    # Auto-switch to zsh
-    if check_command zsh; then
-        echo ""
-        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${GREEN}║  🚀 Switching to zsh shell automatically...                  ║${NC}"
-        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
-        echo ""
-        log_to_file "INFO" "Auto-switching to zsh"
-        exec zsh
-    fi
 }
 
 # Main execution
@@ -885,6 +874,17 @@ main() {
     run_tests
     
     print_summary
+    
+    # Auto-switch to zsh after everything is done
+    if check_command zsh; then
+        echo ""
+        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${GREEN}║  🚀 Switching to zsh shell automatically...                  ║${NC}"
+        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
+        log_to_file "INFO" "Auto-switching to zsh shell"
+        exec zsh
+    fi
 }
 
 # Run main
