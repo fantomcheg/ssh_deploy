@@ -37,11 +37,10 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
 ## Snippets (фрагменты кода)
-# Добавляет полезные функции и алиасы:
-# sudo: позволяет повторять команду с префиксом sudo.
-zinit snippet OMZP::sudo
-# Note: OMZP::history removed - causes hanging during installation
-# We use manual history config instead (see HISTORY section below)
+# Note: All OMZP plugins removed - they cause hanging during installation
+# OMZP::sudo removed - causes hanging
+# OMZP::history removed - causes hanging
+# We use manual configuration instead
 
 ## Настройка завершения команд
 # Загружает и инициализирует систему автодополнения Zsh.
