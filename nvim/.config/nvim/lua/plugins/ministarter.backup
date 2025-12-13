@@ -1,0 +1,38 @@
+return {
+  'echasnovski/mini.starter',
+  version = false,
+  event = 'VimEnter',
+  config = function()
+    -- не показывать дашборд, если nvim запущен с файлами/аргументами
+    if vim.fn.argc() > 0 then return end
+
+    local starter = require('mini.starter')
+
+    starter.setup({
+      -- минимум визуального шума
+      header = '',
+      footer = '',
+
+      -- что показывать
+      items = {
+        -- последние файлы (10 штук). второй аргумент:
+        -- true  — только из текущей директории
+        -- false — глобально по всем проектам
+        starter.sections.recent_files(10, false),
+
+        -- действия
+        { name = 'New file',          action = 'enew | startinsert', section = 'Actions' },
+        { name = 'Quit',              action = 'qa',                 section = 'Actions' },
+      },
+
+      -- аккуратное выравнивание по центру + маркеры перед пунктами
+      content_hooks = {
+        starter.gen_hook.adding_bullet(),
+        starter.gen_hook.aligning('center', 'center'),
+      },
+
+      -- если на экране остаётся единственный пункт — выполнить его сразу
+      evaluate_single = true,
+    })
+  end,
+}
