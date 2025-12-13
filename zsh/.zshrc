@@ -37,8 +37,8 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
 ## Snippets (фрагменты кода)
-# sudo: позволяет повторять команду с префиксом sudo (нажать ESC дважды)
-zinit snippet OMZP::sudo
+# Note: OMZP::sudo removed - causes hanging during installation
+# Manual sudo functionality available via Esc-Esc shortcut (built-in zsh)
 
 ## Настройка завершения команд
 # Загружает и инициализирует систему автодополнения Zsh.
