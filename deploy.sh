@@ -697,13 +697,13 @@ run_tests() {
         echo -n "Testing $name... "
         
         if check_command "$command"; then
-            # Run test command if provided
+            # Run test command if provided (with timeout)
             if [ -n "$test_command" ]; then
-                if eval "$test_command" >/dev/null 2>&1; then
+                if timeout 3 bash -c "$test_command" >/dev/null 2>&1; then
                     echo -e "${GREEN}✓ PASS${NC}"
                     ((passed_tests++))
                 else
-                    echo -e "${RED}✗ FAIL${NC} (command exists but test failed)"
+                    echo -e "${RED}✗ FAIL${NC} (command exists but test failed/timeout)"
                     ((failed_tests++))
                 fi
             else
