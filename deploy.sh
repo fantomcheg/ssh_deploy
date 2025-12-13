@@ -652,6 +652,7 @@ run_tests() {
     test_tool "broot" "broot" "broot --version"
     test_tool "mc" "mc" "mc --version"
     test_tool "tmux" "tmux" "tmux -V"
+    test_tool "htop" "htop" "htop --version"
     echo ""
     
     # Modern CLI tools
@@ -773,6 +774,7 @@ print_summary() {
     check_command nvim && echo -e "  ${GREEN}✓${NC} neovim"
     check_command nnn && echo -e "  ${GREEN}✓${NC} nnn"
     check_command tmux && echo -e "  ${GREEN}✓${NC} tmux"
+    check_command htop && echo -e "  ${GREEN}✓${NC} htop"
     check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree view file manager)"
     check_command fastfetch && echo -e "  ${GREEN}✓${NC} fastfetch (system info)"
     check_command fzf && echo -e "  ${GREEN}✓${NC} fzf"

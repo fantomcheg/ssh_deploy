@@ -190,8 +190,8 @@ Comprehensive testing suite that validates installation:
 - zsh, neovim, nnn, stow
 - Version checks for each tool
 
-**File Managers Tests:**
-- broot, mc, tmux
+**File Managers & System Monitors Tests:**
+- broot, mc, tmux, htop
 - Version checks
 
 **Modern CLI Tools Tests:**
@@ -300,11 +300,12 @@ After installation:
 exec zsh
 
 # Test installed tools
-which zsh nvim nnn fzf bat eza fd zoxide tree tmux broot fastfetch
+which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop broot fastfetch
 
 # Try useful commands
 n              # Launch nnn file manager
 br             # Launch broot tree viewer
+htop           # Interactive process viewer
 fastfetch      # Show system information
 docker ps      # List running containers (after logout/login)
 docker run hello-world  # Test docker installation
