@@ -46,6 +46,8 @@ INSTALL_DUF=true
 INSTALL_DUST=true
 INSTALL_JQ=true
 INSTALL_RIPGREP=true
+INSTALL_MTR=true
+INSTALL_DOG=true
 
 # Helper functions
 print_banner() {
@@ -182,6 +184,14 @@ install_essential_packages() {
         
         if $INSTALL_RIPGREP; then
             install_package "ripgrep"
+        fi
+        
+        if $INSTALL_MTR; then
+            install_package "mtr"
+        fi
+        
+        if $INSTALL_DOG; then
+            install_package "dog"
         fi
         
         # eza and zoxide might not be in default repos, will handle separately
@@ -702,6 +712,8 @@ run_tests() {
     test_tool "dust" "dust" "dust --version"
     test_tool "jq" "jq" "jq --version"
     test_tool "ripgrep" "rg" "rg --version"
+    test_tool "mtr" "mtr" "mtr --version"
+    test_tool "dog" "dog" "dog --version"
     echo ""
     
     # DevOps tools
@@ -824,6 +836,8 @@ print_summary() {
     check_command dust && echo -e "  ${GREEN}✓${NC} dust (better du)"
     check_command jq && echo -e "  ${GREEN}✓${NC} jq (JSON processor)"
     check_command rg && echo -e "  ${GREEN}✓${NC} ripgrep (better grep)"
+    check_command mtr && echo -e "  ${GREEN}✓${NC} mtr (network diagnostic)"
+    check_command dog && echo -e "  ${GREEN}✓${NC} dog (better dig)"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"

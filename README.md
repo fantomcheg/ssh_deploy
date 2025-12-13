@@ -47,6 +47,8 @@ That's it! ✨
 - **dust** - Modern `du` alternative for disk usage analysis
 - **jq** - Command-line JSON processor
 - **ripgrep (rg)** - Extremely fast grep alternative with better defaults
+- **mtr** - Network diagnostic tool (combines ping and traceroute)
+- **dog** - Modern DNS client (better dig alternative)
 
 All tools work seamlessly together and are configured via dotfiles.
 
@@ -304,7 +306,7 @@ After installation:
 exec zsh
 
 # Test installed tools
-which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg broot fastfetch
+which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg mtr dog broot fastfetch
 
 # Try useful commands
 n              # Launch nnn file manager
@@ -314,6 +316,8 @@ df             # Disk usage (duf if installed)
 du             # Directory size (dust if installed)
 jq             # JSON processor
 rg             # Fast grep alternative (ripgrep)
+mtr            # Network diagnostic tool
+dog            # Modern DNS client
 fastfetch      # Show system information
 docker ps      # List running containers (after logout/login)
 docker run hello-world  # Test docker installation
