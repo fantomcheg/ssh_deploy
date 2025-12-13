@@ -12,6 +12,19 @@
 	},
 	"modules": [
 		{
+			"type": "custom",
+			"format": "\u001b[1m\u001b[96m╔═══════════════════════════════════════════════════════════════╗\u001b[0m"
+		},
+		{
+			"type": "custom",
+			"format": "\u001b[1m\u001b[96m║  \u001b[1m\u001b[95m🚀 ssh_deploy by Fantomcheg\u001b[0m\u001b[96m                              ║\u001b[0m"
+		},
+		{
+			"type": "custom",
+			"format": "\u001b[1m\u001b[96m╚═══════════════════════════════════════════════════════════════╝\u001b[0m"
+		},
+		"break",
+		{
 			"type": "title",
 			"key": "ホスト",
 			"keyColor": "blue"
@@ -19,12 +32,12 @@
 		"break",
 		{
 			"type": "os",
-			"key": "╭─",
+			"key": "╭─",
 			"keyColor": "magenta"
 		},
 		{
 			"type": "kernel",
-			"key": "├─",
+			"key": "├─",
 			"format": "{1} {2}",
 			"keyColor": "magenta"
 		},
@@ -35,12 +48,12 @@
 		},
 		{
 			"type": "de",
-			"key": "├─",
+			"key": "├─",
 			"keyColor": "magenta"
 		},
 		{
 			"type": "wm",
-			"key": "├─",
+			"key": "├─",
 			"keyColor": "magenta"
 		},
 		{
@@ -59,61 +72,30 @@
 			"keyColor": "magenta"
 		},
 		"break",
-		// One entry for every partition
 		{
 		 	"type": "disk",
-		 	"key": "├─",
+		 	"key": "├─",
 		 	"keyColor": "green"
 		},
-		// {
-		// 	"type": "brightness",
-		// 	"key": "├─󰃞",
-		// 	"keyColor": "green"
-		// },
-		// {
-		// 	"type": "battery",
-		// 	"key": "├─",
-		// 	"keyColor": "green"
-		// },
-		// {
-		// 	"type": "poweradapter",
-		// 	"key": "├─",
-		// 	"keyColor": "green"
-		// },
-		// {
-		// 	"type": "gamepad",
-		// 	"key": "├─",
-		// 	"keyColor": "green"
-		// },
-		// {
-		// 	"type": "bluetooth",
-		// 	"key": "├─",
-		// 	"keyColor": "green"
-		// },
-		// {
-		// 	"type": "sound",
-		// 	"key": "╰─",
-		// 	"keyColor": "green"
-		// },
 		{
 			"type": "terminal",
-			"key": "╭─",
+			"key": "╭─",
 			"keyColor": "green"
 		},
 		{
 			"type": "terminalfont",
-			"key": "├─",
+			"key": "├─",
 			"keyColor": "green"
 		},
 		{
 			"type": "shell",
-			"key": "╰─",
+			"key": "╰─",
 			"keyColor": "green"
 		},
 		"break",
 		{
 			"type": "host",
-			"key": "╭─",
+			"key": "╭─",
 			"keyColor": "yellow"
 		},
 		{
@@ -131,21 +113,11 @@
 			"key": "├─󰍹",
 			"keyColor": "yellow"
 		},
-		// {
-		// 	"type": "wallpaper",
-		// 	"key": "╰─󰸉",
-		// 	"keyColor": "yellow"
-		// },
 		{
 			"type": "memory",
 			"key": "├─󰑭",
 			"keyColor": "yellow"
 		},
-		// {
-		// 	"type": "swap",
-		// 	"key": "├─󰓡",
-		// 	"keyColor": "yellow"
-		// },
 		{
 			"type": "uptime",
 			"key": "╰─󰅐",
@@ -154,8 +126,7 @@
 		"break",
 		{
 			"type": "custom",
-			"format": "\u001b[1m\u001b[31m  \u001b[1m\u001b[32m  \u001b[1m\u001b[33m  \u001b[1m\u001b[34m  \u001b[1m\u001b[35m  \u001b[1m\u001b[36m  \u001b[1m\u001b[37m  \u001b[1m\u001b[30m       \u001b[1m\u001b[91m  \u001b[1m\u001b[92m  \u001b[1m\u001b[93m  \u001b[1m\u001b[94m  \u001b[1m\u001b[95m  \u001b[1m\u001b[96m  \u001b[1m\u001b[97m  \u001b[1m\u001b[90m"
+			"format": "\u001b[1m\u001b[31m  \u001b[1m\u001b[32m  \u001b[1m\u001b[33m  \u001b[1m\u001b[34m  \u001b[1m\u001b[35m  \u001b[1m\u001b[36m  \u001b[1m\u001b[37m  \u001b[1m\u001b[30m       \u001b[1m\u001b[91m  \u001b[1m\u001b[92m  \u001b[1m\u001b[93m  \u001b[1m\u001b[94m  \u001b[1m\u001b[95m  \u001b[1m\u001b[96m  \u001b[1m\u001b[97m  \u001b[1m\u001b[90m"
 		}
 	]
 }
-

@@ -40,6 +40,7 @@ INSTALL_TMUX=true
 INSTALL_BROOT=true
 INSTALL_FASTFETCH=true
 INSTALL_DOCKER=true
+INSTALL_MC=true  # Midnight Commander with custom theme
 
 # Helper functions
 print_banner() {
@@ -274,7 +275,12 @@ install_mc() {
         return
     fi
     
-    install_package "mc"
+    # Install via package manager
+    if [ "$HAS_SUDO" = true ]; then
+        install_package "mc"
+    else
+        log_warning "mc requires sudo to install"
+    fi
 }
 
 install_eza() {
@@ -561,13 +567,14 @@ stow_packages() {
     cd "$DOTFILES_DIR" || exit 1
     
     # Only essential packages for server environment
-    # Minimal setup: zsh, nvim, nnn + broot + fastfetch
-    # Excludes: ssh, alacritty, kde, mc, tmux (local/desktop-only tools)
+    # Minimal setup: zsh, nvim, nnn + broot + fastfetch + mc
+    # Excludes: ssh, alacritty, kde, tmux (local/desktop-only tools)
     local packages=("zsh" "nvim" "nnn")
     
     # Add optional packages if installed
     $INSTALL_BROOT && [ -d "broot" ] && packages+=("broot")
     $INSTALL_FASTFETCH && [ -d "fastfetch" ] && packages+=("fastfetch")
+    $INSTALL_MC && [ -d "mc" ] && packages+=("mc")
     
     for package in "${packages[@]}"; do
         if [ -d "$package" ]; then
@@ -580,7 +587,7 @@ stow_packages() {
         fi
     done
     
-    log_info "Skipped packages (local-only): ssh, alacritty, kde, mc, tmux"
+    log_info "Skipped packages (local-only): ssh, alacritty, kde, tmux"
 }
 
 setup_nvim_plugins() {
@@ -627,6 +634,7 @@ print_summary() {
     check_command tree && echo -e "  ${GREEN}✓${NC} tree"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
+    check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
@@ -639,6 +647,7 @@ print_summary() {
     echo ""
     echo -e "${CYAN}Useful aliases:${NC}"
     echo -e "  ${YELLOW}n${NC}   - nnn file manager"
+    echo -e "  ${YELLOW}mc${NC}  - Midnight Commander (with cd-on-exit)"
     echo -e "  ${YELLOW}br${NC}  - broot tree view"
     echo -e "  ${YELLOW}so${NC}  - reload .zshrc"
     echo -e "  ${YELLOW}ls${NC}  - eza (modern ls)"
