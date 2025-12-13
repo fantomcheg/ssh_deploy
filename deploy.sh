@@ -249,14 +249,18 @@ install_dust_portable() {
     local dust_url="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-musl.tar.gz"
     log_to_file "INFO" "Downloading from: $dust_url"
     
+    echo -n "  Downloading... "
     local download_output
-    if download_output=$(curl -fsSL "$dust_url" -o /tmp/dust.tar.gz 2>&1); then
+    if download_output=$(curl -fsSL --progress-bar "$dust_url" -o /tmp/dust.tar.gz 2>&1); then
+        echo "✓"
         log_to_file "SUCCESS" "Downloaded dust successfully"
         log_to_file "OUTPUT" "$download_output"
         
+        echo -n "  Extracting... "
         log_to_file "INFO" "Extracting archive..."
         local extract_output
         if extract_output=$(tar -xzf /tmp/dust.tar.gz -C /tmp 2>&1); then
+            echo "✓"
             log_to_file "SUCCESS" "Extracted successfully"
             log_to_file "OUTPUT" "$extract_output"
             
@@ -273,9 +277,11 @@ install_dust_portable() {
             log_to_file "SUCCESS" "dust installed successfully to $LOCAL_BIN/dust"
             return 0
         else
+            echo "✗"
             log_to_file "ERROR" "Extraction failed: $extract_output"
         fi
     else
+        echo "✗"
         log_warning "Failed to download dust"
         log_to_file "ERROR" "Download failed: $download_output"
         return 1
@@ -296,14 +302,18 @@ install_dog_portable() {
     local dog_url="https://github.com/ogham/dog/releases/download/v0.1.0/dog-v0.1.0-x86_64-unknown-linux-gnu.zip"
     log_to_file "INFO" "Downloading from: $dog_url"
     
+    echo -n "  Downloading... "
     local download_output
-    if download_output=$(curl -fsSL "$dog_url" -o /tmp/dog.zip 2>&1); then
+    if download_output=$(curl -fsSL --progress-bar "$dog_url" -o /tmp/dog.zip 2>&1); then
+        echo "✓"
         log_to_file "SUCCESS" "Downloaded dog successfully"
         log_to_file "OUTPUT" "$download_output"
         
+        echo -n "  Extracting... "
         log_to_file "INFO" "Extracting archive..."
         local extract_output
         if extract_output=$(unzip -q /tmp/dog.zip -d /tmp 2>&1); then
+            echo "✓"
             log_to_file "SUCCESS" "Extracted successfully"
             log_to_file "OUTPUT" "$extract_output"
             
@@ -320,9 +330,11 @@ install_dog_portable() {
             log_to_file "SUCCESS" "dog installed successfully to $LOCAL_BIN/dog"
             return 0
         else
+            echo "✗"
             log_to_file "ERROR" "Extraction failed: $extract_output"
         fi
     else
+        echo "✗"
         log_warning "Failed to download dog"
         log_to_file "ERROR" "Download failed: $download_output"
         return 1
