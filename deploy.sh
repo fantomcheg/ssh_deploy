@@ -158,11 +158,11 @@ install_essential_packages() {
     log_info "Installing essential packages..."
     
     if [ "$HAS_SUDO" = true ]; then
-        log_info "Updating package lists..."
-        if sudo apt-get update -qq >> "$LOG_FILE" 2>&1; then
+        log_info "Updating package lists (this may take a minute)..."
+        if sudo apt-get update 2>&1 | tee -a "$LOG_FILE" | grep -E "Hit:|Get:|Ign:|Err:" | tail -5; then
             log_success "Package lists updated"
         else
-            log_warning "Failed to update package lists"
+            log_warning "Failed to update package lists (check log for details)"
         fi
         
         # Essential tools
