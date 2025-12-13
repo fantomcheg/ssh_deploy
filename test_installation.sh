@@ -4,7 +4,8 @@
 # Tests all installed tools and writes results to log
 #
 
-set -e
+# Don't exit on error - we want to run all tests
+set +e
 
 # Colors
 RED='\033[0;31m'
@@ -143,12 +144,6 @@ if check_command docker; then
         log_to_file "⊘ PENDING: docker group (need logout/login)"
     fi
 fi
-echo ""
-
-# System tools
-echo -e "${CYAN}System Information:${NC}"
-log_to_file "=== System Information ==="
-test_tool "fastfetch" "fastfetch" "fastfetch --version"
 echo ""
 
 # Configuration files

@@ -823,21 +823,40 @@ main() {
     print_summary
     
     echo ""
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}           ✅ DEPLOYMENT FINISHED SUCCESSFULLY!                ${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}"
+    echo ""
     log_info "Deployment finished successfully!"
     
     # Auto-switch to zsh after everything is done
     if check_command zsh; then
         echo ""
         echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${GREEN}║  🚀 Switching to zsh shell in 2 seconds...                   ║${NC}"
-        echo -e "${GREEN}║     All aliases will be available immediately!                ║${NC}"
+        echo -e "${GREEN}║  🚀 SWITCHING TO ZSH SHELL NOW...                            ║${NC}"
+        echo -e "${GREEN}║                                                               ║${NC}"
+        echo -e "${GREEN}║     ✅ All aliases will work immediately!                     ║${NC}"
+        echo -e "${GREEN}║     ✅ Type 'so' to reload .zshrc                             ║${NC}"
+        echo -e "${GREEN}║     ✅ Type 'n' for nnn, 'mc' for Midnight Commander          ║${NC}"
         echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
         echo ""
-        log_to_file "INFO" "Auto-switching to zsh shell"
-        sleep 2
+        log_to_file "INFO" "Auto-switching to zsh shell with 'exec zsh -l'"
+        
+        # Countdown for visibility
+        for i in 3 2 1; do
+            echo -ne "\r${YELLOW}Switching in $i...${NC}"
+            sleep 1
+        done
+        echo -e "\r${GREEN}✓ Switching now!${NC}   "
+        echo ""
+        
+        # This replaces current shell with zsh
         exec zsh -l
     else
         log_warning "zsh not found - cannot switch shells"
+        echo ""
+        echo -e "${YELLOW}⚠ Warning: zsh not found. Please install zsh manually.${NC}"
+        echo ""
     fi
 }
 
