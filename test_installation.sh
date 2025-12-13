@@ -61,19 +61,20 @@ test_tool() {
         # Run test command if provided (with timeout)
         if [ -n "$test_command" ]; then
             log_to_file "Running: $test_command"
-            if timeout 3 bash -c "$test_command" >> "$LOG_FILE" 2>&1; then
+            # Use timeout with || true to never exit on failure
+            if timeout 3 bash -c "$test_command" >> "$LOG_FILE" 2>&1 || false; then
                 echo -e "${GREEN}✓ PASS${NC}"
                 log_to_file "✓ PASS: $name"
-                ((passed_tests++))
+                ((passed_tests++)) || true
             else
                 echo -e "${RED}✗ FAIL${NC} (timeout or error)"
                 log_to_file "✗ FAIL: $name (timeout or error)"
-                ((failed_tests++))
+                ((failed_tests++)) || true
             fi
         else
             echo -e "${GREEN}✓ PASS${NC}"
             log_to_file "✓ PASS: $name (command exists)"
-            ((passed_tests++))
+            ((passed_tests++)) || true
         fi
     else
         echo -e "${YELLOW}⊘ SKIP${NC} (not installed)"
@@ -123,22 +124,22 @@ test_tool "docker" "docker" "docker --version"
 if check_command docker; then
     echo -n "Testing docker daemon... "
     log_to_file "Testing docker daemon"
-    if timeout 5 sudo docker info >/dev/null 2>&1; then
+    if timeout 5 sudo docker info >/dev/null 2>&1 || false; then
         echo -e "${GREEN}✓ PASS${NC}"
         log_to_file "✓ PASS: docker daemon running"
-        ((passed_tests++))
+        ((passed_tests++)) || true
     else
         echo -e "${RED}✗ FAIL${NC} (daemon not running)"
         log_to_file "✗ FAIL: docker daemon not running"
-        ((failed_tests++))
+        ((failed_tests++)) || true
     fi
     
     echo -n "Testing docker group... "
     log_to_file "Testing docker group membership"
-    if groups | grep -q docker; then
+    if groups | grep -q docker || false; then
         echo -e "${GREEN}✓ PASS${NC} (user in group)"
         log_to_file "✓ PASS: user in docker group"
-        ((passed_tests++))
+        ((passed_tests++)) || true
     else
         echo -e "${YELLOW}⊘ PENDING${NC} (need logout/login)"
         log_to_file "⊘ PENDING: docker group (need logout/login)"
@@ -150,32 +151,32 @@ echo ""
 echo -e "${CYAN}Configuration Files:${NC}"
 log_to_file "=== Configuration Files ==="
 echo -n "Testing .zshrc... "
-if [ -f "$HOME/.zshrc" ]; then
+if [ -f "$HOME/.zshrc" ] || false; then
     echo -e "${GREEN}✓ PASS${NC}"
     log_to_file "✓ PASS: .zshrc exists"
-    ((passed_tests++))
+    ((passed_tests++)) || true
 else
     echo -e "${RED}✗ FAIL${NC}"
     log_to_file "✗ FAIL: .zshrc missing"
-    ((failed_tests++))
+    ((failed_tests++)) || true
 fi
 
 echo -n "Testing nvim config... "
-if [ -f "$HOME/.config/nvim/init.lua" ]; then
+if [ -f "$HOME/.config/nvim/init.lua" ] || false; then
     echo -e "${GREEN}✓ PASS${NC}"
     log_to_file "✓ PASS: nvim/init.lua exists"
-    ((passed_tests++))
+    ((passed_tests++)) || true
 else
     echo -e "${RED}✗ FAIL${NC}"
     log_to_file "✗ FAIL: nvim/init.lua missing"
-    ((failed_tests++))
+    ((failed_tests++)) || true
 fi
 
 echo -n "Testing mc config... "
-if [ -f "$HOME/.config/mc/ini" ]; then
+if [ -f "$HOME/.config/mc/ini" ] || false; then
     echo -e "${GREEN}✓ PASS${NC}"
     log_to_file "✓ PASS: mc/ini exists"
-    ((passed_tests++))
+    ((passed_tests++)) || true
 else
     echo -e "${YELLOW}⊘ SKIP${NC}"
     log_to_file "⊘ SKIP: mc/ini (optional)"
