@@ -30,6 +30,12 @@ INSTALL_ZSH=true
 INSTALL_NEOVIM=true
 INSTALL_NNN=true
 INSTALL_MC=false  # Not needed on servers
+INSTALL_FZF=true
+INSTALL_BAT=true
+INSTALL_EZA=true
+INSTALL_FD=true
+INSTALL_ZOXIDE=true
+INSTALL_TREE=true
 
 # Helper functions
 print_banner() {
@@ -120,6 +126,27 @@ install_essential_packages() {
         install_package "wget"
         install_package "stow"
         install_package "build-essential"
+        
+        # Additional modern CLI tools
+        if $INSTALL_FZF; then
+            install_package "fzf"
+        fi
+        
+        if $INSTALL_BAT; then
+            # bat is sometimes named batcat on Ubuntu/Debian
+            install_package "bat" || install_package "batcat"
+        fi
+        
+        if $INSTALL_FD; then
+            # fd-find on Ubuntu/Debian
+            install_package "fd-find"
+        fi
+        
+        if $INSTALL_TREE; then
+            install_package "tree"
+        fi
+        
+        # eza and zoxide might not be in default repos, will handle separately
     fi
 }
 
@@ -246,6 +273,64 @@ install_mc() {
     install_package "mc"
 }
 
+install_eza() {
+    if ! $INSTALL_EZA; then
+        return
+    fi
+    
+    log_info "Setting up eza..."
+    
+    if check_command eza; then
+        log_success "eza already installed"
+        return
+    fi
+    
+    # Try package manager first (might be in newer repos)
+    if [ "$HAS_SUDO" = true ]; then
+        if install_package "eza" 2>/dev/null; then
+            return
+        fi
+    fi
+    
+    # Install from GitHub releases (portable)
+    log_info "Installing eza from GitHub releases..."
+    local eza_url="https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+    local temp_dir=$(mktemp -d)
+    
+    if wget -q "$eza_url" -O "$temp_dir/eza.tar.gz" 2>/dev/null; then
+        tar -xzf "$temp_dir/eza.tar.gz" -C "$temp_dir"
+        mkdir -p "$LOCAL_BIN"
+        mv "$temp_dir/eza" "$LOCAL_BIN/"
+        chmod +x "$LOCAL_BIN/eza"
+        rm -rf "$temp_dir"
+        log_success "eza installed to $LOCAL_BIN/eza"
+    else
+        log_warning "Failed to install eza"
+        rm -rf "$temp_dir"
+    fi
+}
+
+install_zoxide() {
+    if ! $INSTALL_ZOXIDE; then
+        return
+    fi
+    
+    log_info "Setting up zoxide..."
+    
+    if check_command zoxide; then
+        log_success "zoxide already installed"
+        return
+    fi
+    
+    # Install using the official installer script
+    log_info "Installing zoxide from official installer..."
+    if curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash; then
+        log_success "zoxide installed"
+    else
+        log_warning "Failed to install zoxide"
+    fi
+}
+
 clone_dotfiles() {
     log_info "Cloning dotfiles repository..."
     
@@ -324,15 +409,20 @@ print_summary() {
     echo ""
     echo -e "${CYAN}Installed:${NC}"
     check_command zsh && echo -e "  ${GREEN}✓${NC} zsh"
-    check_command nvim && echo -e "  ${GREEN}✓${NC} neovim ($(nvim --version | head -1))"
+    check_command nvim && echo -e "  ${GREEN}✓${NC} neovim"
     check_command nnn && echo -e "  ${GREEN}✓${NC} nnn"
-    check_command mc && echo -e "  ${GREEN}✓${NC} mc"
+    check_command fzf && echo -e "  ${GREEN}✓${NC} fzf"
+    check_command bat && echo -e "  ${GREEN}✓${NC} bat" || check_command batcat && echo -e "  ${GREEN}✓${NC} batcat"
+    check_command eza && echo -e "  ${GREEN}✓${NC} eza"
+    check_command fd && echo -e "  ${GREEN}✓${NC} fd" || check_command fdfind && echo -e "  ${GREEN}✓${NC} fdfind"
+    check_command zoxide && echo -e "  ${GREEN}✓${NC} zoxide"
+    check_command tree && echo -e "  ${GREEN}✓${NC} tree"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes"
     echo -e "  2. ${YELLOW}Run 'nvim'${NC} to install plugins (first launch)"
-    echo -e "  3. ${YELLOW}Run 'nnn'${NC} to test file manager"
+    echo -e "  3. ${YELLOW}Try: fzf, eza, zoxide${NC}"
     echo ""
     echo -e "${CYAN}Configuration:${NC}"
     echo -e "  Dotfiles: ${BLUE}$DOTFILES_DIR${NC}"
@@ -356,6 +446,8 @@ main() {
     install_neovim
     install_nnn
     install_mc
+    install_eza
+    install_zoxide
     
     # Setup dotfiles
     clone_dotfiles
