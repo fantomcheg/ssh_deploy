@@ -41,7 +41,7 @@ INSTALL_FD=true
 INSTALL_ZOXIDE=true
 INSTALL_TREE=true
 INSTALL_TMUX=true
-INSTALL_FASTFETCH=true
+INSTALL_FASTFETCH=false  # Disabled - causes issues
 INSTALL_DOCKER=true
 INSTALL_MC=true  # Midnight Commander with custom theme
 INSTALL_HTOP=true
@@ -667,7 +667,6 @@ stow_packages() {
     local packages=("zsh" "nvim" "nnn")
     
     # Add optional packages if installed
-    $INSTALL_FASTFETCH && [ -d "fastfetch" ] && packages+=("fastfetch")
     $INSTALL_MC && [ -d "mc" ] && packages+=("mc")
     
     for package in "${packages[@]}"; do
@@ -734,7 +733,6 @@ print_summary() {
     check_command nnn && echo -e "  ${GREEN}✓${NC} nnn"
     check_command tmux && echo -e "  ${GREEN}✓${NC} tmux"
     check_command htop && echo -e "  ${GREEN}✓${NC} htop"
-    check_command fastfetch && echo -e "  ${GREEN}✓${NC} fastfetch (system info)"
     check_command fzf && echo -e "  ${GREEN}✓${NC} fzf"
     check_command bat && echo -e "  ${GREEN}✓${NC} bat" || check_command batcat && echo -e "  ${GREEN}✓${NC} batcat (use 'bat' alias)"
     check_command eza && echo -e "  ${GREEN}✓${NC} eza"
@@ -753,21 +751,11 @@ print_summary() {
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
     echo -e "  2. ${YELLOW}Run 'nvim'${NC} to auto-install plugins (first launch)"
-    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), mc, fastfetch"
+    echo -e "  3. ${YELLOW}Try commands:${NC} n (nnn), mc"
     echo ""
     echo -e "${CYAN}Configuration:${NC}"
     echo -e "  Dotfiles: ${BLUE}$DOTFILES_DIR${NC}"
     echo -e "  Binaries: ${BLUE}$LOCAL_BIN${NC}"
-    echo ""
-    echo -e "${CYAN}Useful aliases:${NC}"
-    echo -e "  ${YELLOW}n${NC}   - nnn file manager"
-    echo -e "  ${YELLOW}mc${NC}  - Midnight Commander (with cd-on-exit)"
-    echo -e "  ${YELLOW}so${NC}  - reload .zshrc"
-    echo -e "  ${YELLOW}ls${NC}  - eza (modern ls)"
-    echo -e "  ${YELLOW}bat${NC} - cat with syntax highlighting"
-    echo ""
-    echo -e "${CYAN}System info:${NC}"
-    echo -e "  Run ${YELLOW}fastfetch${NC} to see beautiful system information"
     echo ""
     
     # Docker specific notes
@@ -811,7 +799,7 @@ main() {
     install_eza
     install_zoxide
     install_tmux
-    install_fastfetch
+    # install_fastfetch - disabled, causes issues
     install_docker
     
     # Install portable versions if apt failed

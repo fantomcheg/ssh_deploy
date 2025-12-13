@@ -1,20 +1,6 @@
 #####
 # Документация для .zshrc
 
-# Show fastfetch on SSH login (BEFORE instant prompt)
-# Only once per SSH session (not on nested shells like 'exec zsh')
-if command -v fastfetch >/dev/null 2>&1; then
-    # Check if SSH connection
-    if [[ -n "$SSH_CONNECTION" || -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
-        # Check if we haven't shown fastfetch in this session yet
-        if [[ -z "$FASTFETCH_SHOWN" ]]; then
-            fastfetch
-            echo ""  # Add blank line after fastfetch
-            export FASTFETCH_SHOWN=1
-        fi
-    fi
-fi
-
 ## Инициализация Powerlevel10k
 # Включает мгновенный промпт Powerlevel10k для ускорения загрузки оболочки.
 # Код, требующий ввода (например, пароли или подтверждения), должен быть размещен выше этого блока.
