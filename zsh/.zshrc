@@ -33,13 +33,12 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 # Автопредложения на основе истории команд.
 zinit light zsh-users/zsh-autosuggestions
-# Note: Aloxaf/fzf-tab removed - causes hanging during installation
+# Интеграция с FZF для улучшения вкладок автодополнения.
+zinit light Aloxaf/fzf-tab
 
 ## Snippets (фрагменты кода)
-# Note: All OMZP plugins removed - they cause hanging during installation
-# OMZP::sudo removed - causes hanging
-# OMZP::history removed - causes hanging
-# We use manual configuration instead
+# sudo: позволяет повторять команду с префиксом sudo (нажать ESC дважды)
+zinit snippet OMZP::sudo
 
 ## Настройка завершения команд
 # Загружает и инициализирует систему автодополнения Zsh.
@@ -83,7 +82,9 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 # Отключает меню автодополнения.
 zstyle ':completion:*' menu no
-# Note: fzf-tab preview settings removed (fzf-tab plugin removed)
+# Настройки предпросмотра для fzf-tab: показывает содержимое каталогов и файлов.
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 ## Функции
 # Функция для перехода в каталог с помощью FZF с предпросмотром дерева файлов.
