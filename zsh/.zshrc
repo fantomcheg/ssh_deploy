@@ -2,13 +2,18 @@
 # Документация для .zshrc
 
 # Show fastfetch on SSH login (BEFORE instant prompt)
-# Only on first login (not on nested shells like 'exec zsh')
+# Only on first SSH connection (not on nested shells like 'exec zsh')
 if command -v fastfetch >/dev/null 2>&1; then
-    # Check if SSH connection AND first shell level (login shell)
+    # Check if SSH connection
     if [[ -n "$SSH_CONNECTION" || -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
-        if [[ "$SHLVL" -eq 1 ]]; then
+        # Use marker file to show only once per SSH session
+        local marker_file="/tmp/.fastfetch_shown_$$_${SSH_CONNECTION// /_}"
+        if [[ ! -f "$marker_file" ]]; then
             fastfetch
             echo ""  # Add blank line after fastfetch
+            touch "$marker_file"
+            # Clean up marker on exit
+            trap "rm -f $marker_file" EXIT
         fi
     fi
 fi
