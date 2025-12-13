@@ -44,8 +44,6 @@ zinit snippet OMZP::sudo
 zinit snippet OMZP::command-not-found
 # history: улучшает работу с историей команд.
 zinit snippet OMZP::history
-# eza: улучшенная замена команды ls с дополнительными опциями.
-zinit snippet OMZP::eza
 
 ## Настройка завершения команд
 # Загружает и инициализирует систему автодополнения Zsh.
@@ -184,9 +182,17 @@ alias cc='tmux kill-window -a -t !'
 # Показывает историю команд.
 # Замена cat на bat с цветами.
 #alias cat='bat --color=always'
-# Алиасы для exa (улучшенный ls).
-alias la='exa -la'
-alias ll='exa -ll'
+# Алиасы для eza (улучшенный ls).
+if command -v eza >/dev/null 2>&1; then
+    alias ls='eza --icons'
+    alias la='eza -la --icons'
+    alias ll='eza -ll --icons'
+    alias lt='eza -T --icons'
+elif command -v exa >/dev/null 2>&1; then
+    alias ls='exa'
+    alias la='exa -la'
+    alias ll='exa -ll'
+fi
 # Очистка экрана.
 alias c='clear'
 # Перетаскивание файлов с помощью dragon-drop.
