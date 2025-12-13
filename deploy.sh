@@ -51,7 +51,6 @@ INSTALL_DUST=true
 INSTALL_JQ=true
 INSTALL_RIPGREP=true
 INSTALL_MTR=true
-INSTALL_DOG=true
 
 # Helper functions
 init_logging() {
@@ -233,10 +232,6 @@ install_essential_packages() {
             install_package "mtr"
         fi
         
-        if $INSTALL_DOG; then
-            install_package "dog"
-        fi
-        
         # eza and zoxide might not be in default repos, will handle separately
     fi
 }
@@ -283,59 +278,6 @@ install_dust_portable() {
     else
         echo "✗"
         log_warning "Failed to download dust"
-        log_to_file "ERROR" "Download failed: $download_output"
-        return 1
-    fi
-}
-
-install_dog_portable() {
-    log_info "Installing dog from GitHub releases..."
-    log_to_file "INFO" "=== Installing dog (portable binary) ==="
-    mkdir -p "$LOCAL_BIN"
-    
-    if ! command -v unzip >/dev/null 2>&1; then
-        log_warning "unzip not found, cannot install dog"
-        log_to_file "ERROR" "unzip command not available - cannot install dog"
-        return 1
-    fi
-    
-    local dog_url="https://github.com/ogham/dog/releases/download/v0.1.0/dog-v0.1.0-x86_64-unknown-linux-gnu.zip"
-    log_to_file "INFO" "Downloading from: $dog_url"
-    
-    echo -n "  Downloading... "
-    local download_output
-    if download_output=$(curl -fsSL --progress-bar "$dog_url" -o /tmp/dog.zip 2>&1); then
-        echo "✓"
-        log_to_file "SUCCESS" "Downloaded dog successfully"
-        log_to_file "OUTPUT" "$download_output"
-        
-        echo -n "  Extracting... "
-        log_to_file "INFO" "Extracting archive..."
-        local extract_output
-        if extract_output=$(unzip -q /tmp/dog.zip -d /tmp 2>&1); then
-            echo "✓"
-            log_to_file "SUCCESS" "Extracted successfully"
-            log_to_file "OUTPUT" "$extract_output"
-            
-            if [ -f /tmp/bin/dog ]; then
-                mv /tmp/bin/dog "$LOCAL_BIN/" 2>&1 | tee -a "$LOG_FILE"
-            elif [ -f /tmp/dog ]; then
-                mv /tmp/dog "$LOCAL_BIN/" 2>&1 | tee -a "$LOG_FILE"
-            fi
-            
-            chmod +x "$LOCAL_BIN/dog" 2>&1 | tee -a "$LOG_FILE"
-            rm -rf /tmp/dog* /tmp/bin 2>&1 | tee -a "$LOG_FILE"
-            
-            log_success "dog installed to $LOCAL_BIN/dog"
-            log_to_file "SUCCESS" "dog installed successfully to $LOCAL_BIN/dog"
-            return 0
-        else
-            echo "✗"
-            log_to_file "ERROR" "Extraction failed: $extract_output"
-        fi
-    else
-        echo "✗"
-        log_warning "Failed to download dog"
         log_to_file "ERROR" "Download failed: $download_output"
         return 1
     fi
@@ -862,7 +804,6 @@ print_summary() {
     check_command jq && echo -e "  ${GREEN}✓${NC} jq (JSON processor)"
     check_command rg && echo -e "  ${GREEN}✓${NC} ripgrep (better grep)"
     check_command mtr && echo -e "  ${GREEN}✓${NC} mtr (network diagnostic)"
-    check_command dog && echo -e "  ${GREEN}✓${NC} dog (better dig)"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
@@ -936,10 +877,6 @@ main() {
     # Install portable versions if apt failed
     if ! check_command dust; then
         install_dust_portable
-    fi
-    
-    if ! check_command dog; then
-        install_dog_portable
     fi
     
     # Setup dotfiles

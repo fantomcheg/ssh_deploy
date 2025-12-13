@@ -114,7 +114,6 @@ test_tool "dust" "dust" "dust --version"
 test_tool "jq" "jq" "jq --version"
 test_tool "ripgrep" "rg" "rg --version"
 test_tool "mtr" "mtr" "mtr --version"
-test_tool "dog" "dog" "dog --version"
 echo ""
 
 # DevOps tools
