@@ -231,6 +231,57 @@ install_essential_packages() {
     fi
 }
 
+install_dust_portable() {
+    log_info "Installing dust from GitHub releases..."
+    mkdir -p "$LOCAL_BIN"
+    
+    local dust_url="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-musl.tar.gz"
+    
+    if curl -fsSL "$dust_url" -o /tmp/dust.tar.gz 2>> "$LOG_FILE"; then
+        tar -xzf /tmp/dust.tar.gz -C /tmp 2>> "$LOG_FILE"
+        if [ -f /tmp/dust-v1.1.1-x86_64-unknown-linux-musl/dust ]; then
+            mv /tmp/dust-v1.1.1-x86_64-unknown-linux-musl/dust "$LOCAL_BIN/" 2>> "$LOG_FILE"
+        elif [ -f /tmp/dust ]; then
+            mv /tmp/dust "$LOCAL_BIN/" 2>> "$LOG_FILE"
+        fi
+        chmod +x "$LOCAL_BIN/dust" 2>> "$LOG_FILE"
+        rm -rf /tmp/dust* 2>> "$LOG_FILE"
+        log_success "dust installed to $LOCAL_BIN/dust"
+        return 0
+    else
+        log_warning "Failed to download dust"
+        return 1
+    fi
+}
+
+install_dog_portable() {
+    log_info "Installing dog from GitHub releases..."
+    mkdir -p "$LOCAL_BIN"
+    
+    if ! command -v unzip >/dev/null 2>&1; then
+        log_warning "unzip not found, cannot install dog"
+        return 1
+    fi
+    
+    local dog_url="https://github.com/ogham/dog/releases/download/v0.1.0/dog-v0.1.0-x86_64-unknown-linux-gnu.zip"
+    
+    if curl -fsSL "$dog_url" -o /tmp/dog.zip 2>> "$LOG_FILE"; then
+        unzip -q /tmp/dog.zip -d /tmp 2>> "$LOG_FILE"
+        if [ -f /tmp/bin/dog ]; then
+            mv /tmp/bin/dog "$LOCAL_BIN/" 2>> "$LOG_FILE"
+        elif [ -f /tmp/dog ]; then
+            mv /tmp/dog "$LOCAL_BIN/" 2>> "$LOG_FILE"
+        fi
+        chmod +x "$LOCAL_BIN/dog" 2>> "$LOG_FILE"
+        rm -rf /tmp/dog* /tmp/bin 2>> "$LOG_FILE"
+        log_success "dog installed to $LOCAL_BIN/dog"
+        return 0
+    else
+        log_warning "Failed to download dog"
+        return 1
+    fi
+}
+
 install_zsh() {
     if ! $INSTALL_ZSH; then
         return
