@@ -185,7 +185,7 @@ debug_log "STEP 14: Done"
 debug_log "STEP 15: Initializing history file"
 # Создаёт файл истории, если он пустой.
 if [[ ! -s ~/.zsh_history ]]; then
-  >| ~/.zsh_history
+  touch ~/.zsh_history 2>/dev/null || true
 fi
 debug_log "STEP 15: Done"
 
