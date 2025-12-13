@@ -171,6 +171,14 @@ install_essential_packages() {
             install_package "dust"
         fi
         
+        if $INSTALL_JQ; then
+            install_package "jq"
+        fi
+        
+        if $INSTALL_RIPGREP; then
+            install_package "ripgrep"
+        fi
+        
         # eza and zoxide might not be in default repos, will handle separately
     fi
 }
@@ -687,6 +695,8 @@ run_tests() {
     test_tool "tree" "tree" "tree --version"
     test_tool "duf" "duf" "duf --version"
     test_tool "dust" "dust" "dust --version"
+    test_tool "jq" "jq" "jq --version"
+    test_tool "ripgrep" "rg" "rg --version"
     echo ""
     
     # DevOps tools
@@ -807,6 +817,8 @@ print_summary() {
     check_command tree && echo -e "  ${GREEN}✓${NC} tree"
     check_command duf && echo -e "  ${GREEN}✓${NC} duf (better df)"
     check_command dust && echo -e "  ${GREEN}✓${NC} dust (better du)"
+    check_command jq && echo -e "  ${GREEN}✓${NC} jq (JSON processor)"
+    check_command rg && echo -e "  ${GREEN}✓${NC} ripgrep (better grep)"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"

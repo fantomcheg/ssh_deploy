@@ -45,6 +45,8 @@ That's it! ✨
 - **tree** - Directory tree visualization
 - **duf** - Modern `df` alternative with better visualization
 - **dust** - Modern `du` alternative for disk usage analysis
+- **jq** - Command-line JSON processor
+- **ripgrep (rg)** - Extremely fast grep alternative with better defaults
 
 All tools work seamlessly together and are configured via dotfiles.
 
@@ -302,7 +304,7 @@ After installation:
 exec zsh
 
 # Test installed tools
-which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust broot fastfetch
+which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg broot fastfetch
 
 # Try useful commands
 n              # Launch nnn file manager
@@ -310,6 +312,8 @@ br             # Launch broot tree viewer
 htop           # Interactive process viewer
 df             # Disk usage (duf if installed)
 du             # Directory size (dust if installed)
+jq             # JSON processor
+rg             # Fast grep alternative (ripgrep)
 fastfetch      # Show system information
 docker ps      # List running containers (after logout/login)
 docker run hello-world  # Test docker installation
