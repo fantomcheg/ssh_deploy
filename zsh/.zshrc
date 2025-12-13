@@ -2,11 +2,14 @@
 # Документация для .zshrc
 
 # Show fastfetch on SSH login (BEFORE instant prompt)
+# Only on first login (not on nested shells like 'exec zsh')
 if command -v fastfetch >/dev/null 2>&1; then
-    # Only show on SSH connections (not on local terminal)
-    if [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-        fastfetch
-        echo ""  # Add blank line after fastfetch
+    # Check if SSH connection AND first shell level (login shell)
+    if [[ -n "$SSH_CONNECTION" || -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+        if [[ "$SHLVL" -eq 1 ]]; then
+            fastfetch
+            echo ""  # Add blank line after fastfetch
+        fi
     fi
 fi
 
