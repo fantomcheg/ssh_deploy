@@ -490,67 +490,6 @@ install_tmux() {
     fi
 }
 
-install_broot() {
-    if ! $INSTALL_BROOT; then
-        return
-    fi
-    
-    log_info "Setting up broot..."
-    log_to_file "INFO" "=== Installing broot ==="
-    
-    if check_command broot; then
-        log_success "broot already installed"
-        return
-    fi
-    
-    # Try package manager first (for newer distros)
-    if [ "$HAS_SUDO" = true ]; then
-        log_info "Trying apt install first..."
-        if install_package "broot" 2>/dev/null; then
-            log_success "broot installed via apt"
-            log_to_file "SUCCESS" "broot installed via apt"
-            return
-        else
-            log_info "apt install failed, trying official binary..."
-            log_to_file "INFO" "apt failed, falling back to official binary"
-        fi
-    fi
-    
-    # Install official binary (recommended by broot)
-    log_info "Installing broot from official source..."
-    log_to_file "INFO" "Downloading official broot binary"
-    
-    local broot_url="https://dystroy.org/broot/download/x86_64-linux/broot"
-    echo -n "  Downloading... "
-    
-    if curl -fsSL "$broot_url" -o /tmp/broot 2>> "$LOG_FILE"; then
-        echo "✓"
-        log_to_file "SUCCESS" "Downloaded broot binary"
-        
-        mkdir -p "$LOCAL_BIN"
-        mv /tmp/broot "$LOCAL_BIN/broot"
-        chmod +x "$LOCAL_BIN/broot"
-        
-        log_success "broot installed to $LOCAL_BIN/broot"
-        log_to_file "SUCCESS" "broot installed successfully to $LOCAL_BIN/broot"
-        
-        # Run broot --install for shell integration (in background, non-blocking)
-        log_info "Setting up shell integration..."
-        echo "" | "$LOCAL_BIN/broot" --install >/dev/null 2>&1 || true
-        
-    else
-        echo "✗"
-        log_warning "Failed to install broot"
-        log_to_file "ERROR" "Failed to download broot from $broot_url"
-    fi
-}
-        log_info "Setting up broot shell integration..."
-        "$LOCAL_BIN/broot" --install 2>/dev/null || log_warning "broot shell integration setup may need manual configuration"
-    else
-        log_warning "Failed to install broot"
-    fi
-}
-
 install_fastfetch() {
     if ! $INSTALL_FASTFETCH; then
         return
