@@ -157,21 +157,24 @@ install_essential_packages() {
     log_to_file "INFO" "=== Starting essential packages installation ==="
     
     if [ "$HAS_SUDO" = true ]; then
-        log_info "Updating package lists (this may take a minute)..."
+        echo ""
+        echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+        echo -e "${CYAN}║  📦 Updating package lists...                                 ║${NC}"
+        echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+        echo ""
         log_to_file "INFO" "Running: sudo apt-get update"
         
-        local update_output
-        if update_output=$(sudo apt-get update 2>&1); then
-            # Show last few lines to user
-            echo "$update_output" | grep -E "Hit:|Get:|Ign:|Err:" | tail -5
-            log_success "Package lists updated"
+        # Live output with progress
+        if sudo apt-get update 2>&1 | tee -a "$LOG_FILE" | grep --line-buffered -E "Hit:|Get:|Ign:|Err:|Fetched"; then
+            echo ""
+            log_success "✓ Package lists updated successfully"
             log_to_file "SUCCESS" "Package lists updated successfully"
-            log_to_file "OUTPUT" "$update_output"
         else
-            log_warning "Failed to update package lists (check log for details)"
+            echo ""
+            log_warning "⚠ Failed to update package lists (check $LOG_FILE for details)"
             log_to_file "ERROR" "apt-get update failed"
-            log_to_file "OUTPUT" "$update_output"
         fi
+        echo ""
         
         # Essential tools
         install_package "git"
