@@ -156,13 +156,23 @@ install_package() {
 
 install_essential_packages() {
     log_info "Installing essential packages..."
+    log_to_file "INFO" "=== Starting essential packages installation ==="
     
     if [ "$HAS_SUDO" = true ]; then
         log_info "Updating package lists (this may take a minute)..."
-        if sudo apt-get update 2>&1 | tee -a "$LOG_FILE" | grep -E "Hit:|Get:|Ign:|Err:" | tail -5; then
+        log_to_file "INFO" "Running: sudo apt-get update"
+        
+        local update_output
+        if update_output=$(sudo apt-get update 2>&1); then
+            # Show last few lines to user
+            echo "$update_output" | grep -E "Hit:|Get:|Ign:|Err:" | tail -5
             log_success "Package lists updated"
+            log_to_file "SUCCESS" "Package lists updated successfully"
+            log_to_file "OUTPUT" "$update_output"
         else
             log_warning "Failed to update package lists (check log for details)"
+            log_to_file "ERROR" "apt-get update failed"
+            log_to_file "OUTPUT" "$update_output"
         fi
         
         # Essential tools
@@ -233,51 +243,88 @@ install_essential_packages() {
 
 install_dust_portable() {
     log_info "Installing dust from GitHub releases..."
+    log_to_file "INFO" "=== Installing dust (portable binary) ==="
     mkdir -p "$LOCAL_BIN"
     
     local dust_url="https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-musl.tar.gz"
+    log_to_file "INFO" "Downloading from: $dust_url"
     
-    if curl -fsSL "$dust_url" -o /tmp/dust.tar.gz 2>> "$LOG_FILE"; then
-        tar -xzf /tmp/dust.tar.gz -C /tmp 2>> "$LOG_FILE"
-        if [ -f /tmp/dust-v1.1.1-x86_64-unknown-linux-musl/dust ]; then
-            mv /tmp/dust-v1.1.1-x86_64-unknown-linux-musl/dust "$LOCAL_BIN/" 2>> "$LOG_FILE"
-        elif [ -f /tmp/dust ]; then
-            mv /tmp/dust "$LOCAL_BIN/" 2>> "$LOG_FILE"
+    local download_output
+    if download_output=$(curl -fsSL "$dust_url" -o /tmp/dust.tar.gz 2>&1); then
+        log_to_file "SUCCESS" "Downloaded dust successfully"
+        log_to_file "OUTPUT" "$download_output"
+        
+        log_to_file "INFO" "Extracting archive..."
+        local extract_output
+        if extract_output=$(tar -xzf /tmp/dust.tar.gz -C /tmp 2>&1); then
+            log_to_file "SUCCESS" "Extracted successfully"
+            log_to_file "OUTPUT" "$extract_output"
+            
+            if [ -f /tmp/dust-v1.1.1-x86_64-unknown-linux-musl/dust ]; then
+                mv /tmp/dust-v1.1.1-x86_64-unknown-linux-musl/dust "$LOCAL_BIN/" 2>&1 | tee -a "$LOG_FILE"
+            elif [ -f /tmp/dust ]; then
+                mv /tmp/dust "$LOCAL_BIN/" 2>&1 | tee -a "$LOG_FILE"
+            fi
+            
+            chmod +x "$LOCAL_BIN/dust" 2>&1 | tee -a "$LOG_FILE"
+            rm -rf /tmp/dust* 2>&1 | tee -a "$LOG_FILE"
+            
+            log_success "dust installed to $LOCAL_BIN/dust"
+            log_to_file "SUCCESS" "dust installed successfully to $LOCAL_BIN/dust"
+            return 0
+        else
+            log_to_file "ERROR" "Extraction failed: $extract_output"
         fi
-        chmod +x "$LOCAL_BIN/dust" 2>> "$LOG_FILE"
-        rm -rf /tmp/dust* 2>> "$LOG_FILE"
-        log_success "dust installed to $LOCAL_BIN/dust"
-        return 0
     else
         log_warning "Failed to download dust"
+        log_to_file "ERROR" "Download failed: $download_output"
         return 1
     fi
 }
 
 install_dog_portable() {
     log_info "Installing dog from GitHub releases..."
+    log_to_file "INFO" "=== Installing dog (portable binary) ==="
     mkdir -p "$LOCAL_BIN"
     
     if ! command -v unzip >/dev/null 2>&1; then
         log_warning "unzip not found, cannot install dog"
+        log_to_file "ERROR" "unzip command not available - cannot install dog"
         return 1
     fi
     
     local dog_url="https://github.com/ogham/dog/releases/download/v0.1.0/dog-v0.1.0-x86_64-unknown-linux-gnu.zip"
+    log_to_file "INFO" "Downloading from: $dog_url"
     
-    if curl -fsSL "$dog_url" -o /tmp/dog.zip 2>> "$LOG_FILE"; then
-        unzip -q /tmp/dog.zip -d /tmp 2>> "$LOG_FILE"
-        if [ -f /tmp/bin/dog ]; then
-            mv /tmp/bin/dog "$LOCAL_BIN/" 2>> "$LOG_FILE"
-        elif [ -f /tmp/dog ]; then
-            mv /tmp/dog "$LOCAL_BIN/" 2>> "$LOG_FILE"
+    local download_output
+    if download_output=$(curl -fsSL "$dog_url" -o /tmp/dog.zip 2>&1); then
+        log_to_file "SUCCESS" "Downloaded dog successfully"
+        log_to_file "OUTPUT" "$download_output"
+        
+        log_to_file "INFO" "Extracting archive..."
+        local extract_output
+        if extract_output=$(unzip -q /tmp/dog.zip -d /tmp 2>&1); then
+            log_to_file "SUCCESS" "Extracted successfully"
+            log_to_file "OUTPUT" "$extract_output"
+            
+            if [ -f /tmp/bin/dog ]; then
+                mv /tmp/bin/dog "$LOCAL_BIN/" 2>&1 | tee -a "$LOG_FILE"
+            elif [ -f /tmp/dog ]; then
+                mv /tmp/dog "$LOCAL_BIN/" 2>&1 | tee -a "$LOG_FILE"
+            fi
+            
+            chmod +x "$LOCAL_BIN/dog" 2>&1 | tee -a "$LOG_FILE"
+            rm -rf /tmp/dog* /tmp/bin 2>&1 | tee -a "$LOG_FILE"
+            
+            log_success "dog installed to $LOCAL_BIN/dog"
+            log_to_file "SUCCESS" "dog installed successfully to $LOCAL_BIN/dog"
+            return 0
+        else
+            log_to_file "ERROR" "Extraction failed: $extract_output"
         fi
-        chmod +x "$LOCAL_BIN/dog" 2>> "$LOG_FILE"
-        rm -rf /tmp/dog* /tmp/bin 2>> "$LOG_FILE"
-        log_success "dog installed to $LOCAL_BIN/dog"
-        return 0
     else
         log_warning "Failed to download dog"
+        log_to_file "ERROR" "Download failed: $download_output"
         return 1
     fi
 }
