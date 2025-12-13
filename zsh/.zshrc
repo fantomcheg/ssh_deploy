@@ -135,6 +135,8 @@ cdf() {
 zstyle ':completion:*:*:cd:argument-completer' _expand _complete _fzf_cd
 
 ## Переменные окружения
+# Добавляет ~/.local/bin в PATH (для установленных бинарников).
+export PATH="$HOME/.local/bin:$PATH"
 # Добавляет путь к npm в переменную PATH.
 export PATH="$PATH:/usr/local/share/npm/bin"
 # Настройки по умолчанию для FZF: обратный layout, границы, встроенная информация, символы и предпросмотр.
