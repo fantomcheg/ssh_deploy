@@ -94,6 +94,14 @@ Installs core system packages:
 - stow (for dotfiles management)
 - build-essential (compilers)
 - fzf, bat/batcat, fd-find, tree (modern CLI tools)
+- tmux (terminal multiplexer)
+- mc (Midnight Commander)
+- htop (process viewer)
+- duf, dust (disk usage tools)
+- jq (JSON processor)
+- ripgrep (better grep)
+- mtr (network diagnostic)
+- dog (DNS client)
 
 ##### **install_zsh()**
 Installs zsh shell and sets it as default:
@@ -202,6 +210,7 @@ Comprehensive testing suite that validates installation:
 
 **Modern CLI Tools Tests:**
 - fzf, bat/batcat, eza, fd/fdfind, zoxide, tree
+- duf, dust, jq, ripgrep, mtr, dog
 - All with version validation
 
 **DevOps Tools Tests:**
@@ -362,6 +371,44 @@ The `.zshrc` includes these aliases:
 - `bat` - works with batcat or bat binary
 - `df` - aliased to duf (if installed)
 - `du` - aliased to dust (if installed)
+
+### 🌐 Network Tools
+
+**MTR (My TraceRoute):**
+```bash
+mtr google.com              # Interactive network diagnostic
+mtr -r -c 50 server.com     # Report mode with 50 packets
+mtr -n server.com           # No DNS resolution (faster)
+sudo mtr server.com         # More detailed info with sudo
+```
+
+**DOG (DNS Client):**
+```bash
+dog example.com             # A record lookup
+dog example.com MX          # Mail server records
+dog example.com @1.1.1.1    # Query specific DNS server
+dog --json example.com      # JSON output
+dog example.com AAAA        # IPv6 address lookup
+```
+
+### 📝 Data Processing
+
+**JQ (JSON Processor):**
+```bash
+curl api.example.com | jq '.data'           # Parse API response
+cat config.json | jq '.settings.theme'      # Extract field
+jq -r '.[] | select(.active==true)' data.json  # Filter
+docker inspect container | jq '.[0].NetworkSettings'
+```
+
+**Ripgrep (Better Grep):**
+```bash
+rg 'pattern'                # Search in current directory
+rg -i 'search'              # Case-insensitive search
+rg 'func' --type py         # Search only in Python files
+rg -A 3 -B 3 'error'        # With 3 lines context
+rg TODO --type rust         # Find TODOs in Rust files
+```
 
 ### 🐳 Docker Usage
 
