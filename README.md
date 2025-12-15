@@ -29,6 +29,12 @@ That's it! ✨
   - Includes docker-compose plugin
 - **tmux** - Terminal multiplexer (default config)
 
+### Development Environment
+- **pyenv** - Python version manager
+  - Manage multiple Python versions
+  - Build Python from source with all dependencies
+  - Seamlessly switch between Python versions
+
 ### File Managers & Viewers
 - **broot** - Tree-view file manager with fuzzy search (like `tree` on steroids)
 - **tmux** - Terminal multiplexer (default config)
@@ -169,6 +175,14 @@ Installs zoxide (smart cd):
 - Installs to ~/.local/bin/zoxide
 - Shell integration in .zshrc
 
+##### **install_pyenv()**
+Installs pyenv Python version manager:
+- Installs all build dependencies (libssl-dev, zlib1g-dev, etc.)
+- Uses official pyenv-installer script
+- Installs to ~/.pyenv
+- Shell integration in .zshrc
+- Allows building Python from source with full feature support
+
 #### 3. **Dotfiles Management**
 
 ##### **clone_dotfiles()**
@@ -257,9 +271,15 @@ INSTALL_FD=true
 INSTALL_ZOXIDE=true
 INSTALL_TREE=true
 INSTALL_TMUX=true
-INSTALL_BROOT=true
-INSTALL_FASTFETCH=true
+INSTALL_PYENV=true
 INSTALL_DOCKER=true
+INSTALL_MC=true
+INSTALL_HTOP=true
+INSTALL_DUF=true
+INSTALL_DUST=true
+INSTALL_JQ=true
+INSTALL_RIPGREP=true
+INSTALL_MTR=true
 ```
 
 Set to `false` to skip installation of specific tools.
@@ -315,19 +335,17 @@ After installation:
 exec zsh
 
 # Test installed tools
-which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg mtr dog broot fastfetch
+which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg mtr mc
 
 # Try useful commands
 n              # Launch nnn file manager
-br             # Launch broot tree viewer
+mc             # Launch Midnight Commander
 htop           # Interactive process viewer
 df             # Disk usage (duf if installed)
 du             # Directory size (dust if installed)
 jq             # JSON processor
 rg             # Fast grep alternative (ripgrep)
 mtr            # Network diagnostic tool
-dog            # Modern DNS client
-fastfetch      # Show system information
 docker ps      # List running containers (after logout/login)
 docker run hello-world  # Test docker installation
 so             # Reload .zshrc
@@ -335,6 +353,12 @@ ls             # eza with icons (if installed)
 bat --help     # cat with syntax highlighting
 fd -h          # fast find alternative
 z <dir>        # zoxide smart cd (after visiting some dirs)
+
+# Python version management with pyenv
+pyenv install --list     # List available Python versions
+pyenv install 3.12.0     # Install specific Python version
+pyenv global 3.12.0      # Set global Python version
+pyenv versions           # List installed versions
 
 # Open nvim to trigger plugin installation
 nvim
@@ -364,13 +388,40 @@ docker compose version
 The `.zshrc` includes these aliases:
 
 - `n` - nnn file manager
-- `br` - broot tree view (if launcher is installed)
+- `mc` - Midnight Commander (with cd-on-exit)
 - `so` - source ~/.zshrc (reload config)
 - `ls`, `la`, `ll`, `lt` - eza with various options
 - `fd` - works with fdfind or fd binary
 - `bat` - works with batcat or bat binary
 - `df` - aliased to duf (if installed)
 - `du` - aliased to dust (if installed)
+
+### 🐍 Python Development with pyenv
+
+After installation, pyenv allows you to manage multiple Python versions:
+
+```bash
+# List available Python versions
+pyenv install --list
+
+# Install a specific Python version
+pyenv install 3.12.0
+pyenv install 3.11.5
+
+# Set global Python version
+pyenv global 3.12.0
+
+# Set local Python version (for current directory)
+pyenv local 3.11.5
+
+# List installed versions
+pyenv versions
+
+# Check current Python version
+python --version
+```
+
+**Note:** The first Python installation may take a few minutes as it builds from source.
 
 ### 🌐 Network Tools
 

@@ -50,6 +50,7 @@ INSTALL_DUST=true
 INSTALL_JQ=true
 INSTALL_RIPGREP=true
 INSTALL_MTR=true
+INSTALL_PYENV=true
 
 # Helper functions
 init_logging() {
@@ -496,6 +497,50 @@ install_tmux() {
     fi
 }
 
+install_pyenv() {
+    if ! $INSTALL_PYENV; then
+        return
+    fi
+    
+    log_info "Setting up pyenv..."
+    
+    # Check if pyenv is already installed
+    if [ -d "$HOME/.pyenv" ]; then
+        log_success "pyenv already installed"
+        return
+    fi
+    
+    # Install pyenv build dependencies
+    if [ "$HAS_SUDO" = true ]; then
+        log_info "Installing pyenv build dependencies..."
+        local deps="make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev"
+        
+        for dep in $deps; do
+            if ! dpkg -l | grep -q "^ii  $dep "; then
+                sudo apt-get install -y "$dep" >> "$LOG_FILE" 2>&1 || log_warning "Failed to install $dep"
+            fi
+        done
+        log_success "pyenv dependencies installed"
+    else
+        log_warning "pyenv requires sudo to install build dependencies"
+        log_warning "Some Python versions may fail to build without dependencies"
+    fi
+    
+    # Install pyenv using official installer
+    log_info "Installing pyenv from official installer..."
+    if curl -fsSL https://pyenv.run | bash >> "$LOG_FILE" 2>&1; then
+        log_success "pyenv installed to ~/.pyenv"
+        
+        # Add pyenv to PATH for current session
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        
+        log_info "pyenv initialization will be handled by .zshrc"
+    else
+        log_warning "Failed to install pyenv"
+    fi
+}
+
 install_fastfetch() {
     if ! $INSTALL_FASTFETCH; then
         return
@@ -740,6 +785,7 @@ print_summary() {
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
+    [ -d "$HOME/.pyenv" ] && echo -e "  ${GREEN}✓${NC} pyenv (Python version manager)"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
@@ -792,6 +838,7 @@ main() {
     install_eza
     install_zoxide
     install_tmux
+    install_pyenv
     # install_fastfetch - disabled, causes issues
     install_docker
     
