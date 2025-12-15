@@ -51,6 +51,7 @@ INSTALL_JQ=true
 INSTALL_RIPGREP=true
 INSTALL_MTR=true
 INSTALL_PYENV=true
+INSTALL_BROOT=true
 
 # Helper functions
 init_logging() {
@@ -541,6 +542,40 @@ install_pyenv() {
     fi
 }
 
+install_broot() {
+    if ! $INSTALL_BROOT; then
+        return
+    fi
+    
+    log_info "Setting up broot..."
+    
+    if check_command broot; then
+        log_success "broot already installed"
+        return
+    fi
+    
+    # Install broot using official installation script
+    log_info "Installing broot from official installer..."
+    
+    # Download and run the official installer
+    # The installer will prompt for confirmation, so we need to handle it
+    if curl -fsSL https://dystroy.org/broot/download/x86_64-linux/broot -o "$LOCAL_BIN/broot" 2>> "$LOG_FILE"; then
+        chmod +x "$LOCAL_BIN/broot"
+        log_success "broot installed to $LOCAL_BIN/broot"
+        
+        # Run broot --install to set up shell integration
+        # This creates ~/.config/broot/launcher/bash/br
+        log_info "Setting up broot shell integration..."
+        if echo | "$LOCAL_BIN/broot" --install >> "$LOG_FILE" 2>&1; then
+            log_success "broot shell integration configured"
+        else
+            log_warning "broot shell integration setup may need manual configuration"
+        fi
+    else
+        log_warning "Failed to install broot"
+    fi
+}
+
 install_fastfetch() {
     if ! $INSTALL_FASTFETCH; then
         return
@@ -710,12 +745,13 @@ stow_packages() {
     cd "$DOTFILES_DIR" || exit 1
     
     # Only essential packages for server environment
-    # Minimal setup: zsh, nvim, nnn + fastfetch + mc
+    # Minimal setup: zsh, nvim, nnn + mc + broot
     # Excludes: ssh, alacritty, kde, tmux (local/desktop-only tools)
     local packages=("zsh" "nvim" "nnn")
     
     # Add optional packages if installed
     $INSTALL_MC && [ -d "mc" ] && packages+=("mc")
+    $INSTALL_BROOT && [ -d "broot" ] && packages+=("broot")
     
     for package in "${packages[@]}"; do
         if [ -d "$package" ]; then
@@ -786,6 +822,7 @@ print_summary() {
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
     [ -d "$HOME/.pyenv" ] && echo -e "  ${GREEN}✓${NC} pyenv (Python version manager)"
+    check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree viewer)"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
@@ -839,6 +876,7 @@ main() {
     install_zoxide
     install_tmux
     install_pyenv
+    install_broot
     # install_fastfetch - disabled, causes issues
     install_docker
     

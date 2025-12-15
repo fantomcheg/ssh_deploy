@@ -36,8 +36,13 @@ That's it! ✨
   - Seamlessly switch between Python versions
 
 ### File Managers & Viewers
-- **broot** - Tree-view file manager with fuzzy search (like `tree` on steroids)
-- **tmux** - Terminal multiplexer (default config)
+- **mc** - Midnight Commander with custom Dracula-inspired theme
+  - cd-on-exit functionality
+  - Custom keybindings (arrows for navigation)
+- **broot** - Tree-view file manager with fuzzy search
+  - Custom nnn-style color theme
+  - Shell integration for `cd` on exit (use `br` command)
+  - Fast directory navigation and preview
 
 ### System Information
 - **fastfetch** - Beautiful system information display (like neofetch but faster)
@@ -183,6 +188,14 @@ Installs pyenv Python version manager:
 - Shell integration in .zshrc
 - Allows building Python from source with full feature support
 
+##### **install_broot()**
+Installs broot tree-view file manager:
+- Downloads official x86_64 Linux binary
+- Installs to ~/.local/bin/broot
+- Runs `broot --install` for shell integration
+- Creates launcher script at ~/.config/broot/launcher/bash/br
+- Includes custom nnn-style color theme via stow
+
 #### 3. **Dotfiles Management**
 
 ##### **clone_dotfiles()**
@@ -272,6 +285,7 @@ INSTALL_ZOXIDE=true
 INSTALL_TREE=true
 INSTALL_TMUX=true
 INSTALL_PYENV=true
+INSTALL_BROOT=true
 INSTALL_DOCKER=true
 INSTALL_MC=true
 INSTALL_HTOP=true
@@ -335,11 +349,12 @@ After installation:
 exec zsh
 
 # Test installed tools
-which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg mtr mc
+which zsh nvim nnn fzf bat eza fd zoxide tree tmux htop duf dust jq rg mtr mc broot
 
 # Try useful commands
 n              # Launch nnn file manager
 mc             # Launch Midnight Commander
+br             # Launch broot tree viewer (with cd-on-exit)
 htop           # Interactive process viewer
 df             # Disk usage (duf if installed)
 du             # Directory size (dust if installed)
@@ -387,8 +402,9 @@ docker compose version
 
 The `.zshrc` includes these aliases:
 
-- `n` - nnn file manager
+- `n` - nnn file manager (with cd-on-exit)
 - `mc` - Midnight Commander (with cd-on-exit)
+- `br` - broot tree viewer (with cd-on-exit)
 - `so` - source ~/.zshrc (reload config)
 - `ls`, `la`, `ll`, `lt` - eza with various options
 - `fd` - works with fdfind or fd binary
