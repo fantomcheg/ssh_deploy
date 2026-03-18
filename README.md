@@ -10,6 +10,12 @@ On your remote server:
 bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh)
 ```
 
+**Если получаете ошибку** `/dev/fd/63: No such file or directory` (EndeavourOS, Arch и др.) — используйте альтернативный способ:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o /tmp/deploy.sh && bash /tmp/deploy.sh
+```
+
 That's it! ✨
 
 ---
@@ -530,6 +536,14 @@ Fastfetch is configured with:
 ---
 
 ## 🛠️ Troubleshooting
+
+### Ошибка `/dev/fd/63: No such file or directory`
+
+На некоторых системах (EndeavourOS, Arch Linux и др.) process substitution `<(curl ...)` не работает из-за отсутствия `/dev/fd`. Используйте:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o /tmp/deploy.sh && bash /tmp/deploy.sh
+```
 
 ### Missing tools after install
 

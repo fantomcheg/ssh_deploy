@@ -4,7 +4,8 @@
 # One command to set up your environment on any Ubuntu/Debian server
 #
 # Usage:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/dotfiles/main/scripts/deploy.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh)
+#   # If /dev/fd error (EndeavourOS, Arch): curl -fsSL .../deploy.sh -o /tmp/deploy.sh && bash /tmp/deploy.sh
 #
 
 set -e
@@ -143,6 +144,9 @@ install_package() {
             ubuntu|debian)
                 sudo apt-get install -y "$package" 2>/dev/null && log_success "$package installed" || log_warning "$package installation failed"
                 ;;
+            arch|endeavouros|manjaro)
+                sudo pacman -S --noconfirm --needed "$package" 2>/dev/null && log_success "$package installed" || log_warning "$package installation failed"
+                ;;
             *)
                 log_warning "Unsupported OS for automatic installation"
                 return 1
@@ -158,86 +162,87 @@ install_essential_packages() {
     log_info "Installing essential packages..."
     log_to_file "INFO" "=== Starting essential packages installation ==="
     
-    if [ "$HAS_SUDO" = true ]; then
-        echo ""
-        echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
-        echo -e "${CYAN}║  📦 Updating package lists...                                 ║${NC}"
-        echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
-        echo ""
-        log_to_file "INFO" "Running: sudo apt-get update"
-        
-        # Live output with progress
-        if sudo apt-get update 2>&1 | tee -a "$LOG_FILE" | grep --line-buffered -E "Hit:|Get:|Ign:|Err:|Fetched"; then
-            echo ""
-            log_success "✓ Package lists updated successfully"
-            log_to_file "SUCCESS" "Package lists updated successfully"
-        else
-            echo ""
-            log_warning "⚠ Failed to update package lists (check $LOG_FILE for details)"
-            log_to_file "ERROR" "apt-get update failed"
-        fi
-        echo ""
-        
-        # Essential tools
-        install_package "git"
-        install_package "curl"
-        install_package "wget"
-        install_package "stow"
-        install_package "build-essential"
-        
-        # Additional modern CLI tools
-        if $INSTALL_FZF; then
-            install_package "fzf"
-        fi
-        
-        if $INSTALL_BAT; then
-            # bat is sometimes named batcat on Ubuntu/Debian
-            install_package "bat" || install_package "batcat"
-        fi
-        
-        if $INSTALL_FD; then
-            # fd-find on Ubuntu/Debian
-            install_package "fd-find"
-        fi
-        
-        if $INSTALL_TREE; then
-            install_package "tree"
-        fi
-        
-        if $INSTALL_TMUX; then
-            install_package "tmux"
-        fi
-        
-        if $INSTALL_MC; then
-            install_package "mc"
-        fi
-        
-        if $INSTALL_HTOP; then
-            install_package "htop"
-        fi
-        
-        if $INSTALL_DUF; then
-            install_package "duf"
-        fi
-        
-        if $INSTALL_DUST; then
-            install_package "dust"
-        fi
-        
-        if $INSTALL_JQ; then
-            install_package "jq"
-        fi
-        
-        if $INSTALL_RIPGREP; then
-            install_package "ripgrep"
-        fi
-        
-        if $INSTALL_MTR; then
-            install_package "mtr"
-        fi
-        
-        # eza and zoxide might not be in default repos, will handle separately
+    if [ "$HAS_SUDO" != true ]; then
+        return
     fi
+    
+    echo ""
+    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║  📦 Updating package lists...                                 ║${NC}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    
+    case $OS in
+        ubuntu|debian)
+            log_to_file "INFO" "Running: sudo apt-get update"
+            if sudo apt-get update 2>&1 | tee -a "$LOG_FILE" | grep --line-buffered -E "Hit:|Get:|Ign:|Err:|Fetched"; then
+                echo ""
+                log_success "✓ Package lists updated successfully"
+                log_to_file "SUCCESS" "Package lists updated successfully"
+            else
+                echo ""
+                log_warning "⚠ Failed to update package lists (check $LOG_FILE for details)"
+                log_to_file "ERROR" "apt-get update failed"
+            fi
+            echo ""
+            
+            install_package "git"
+            install_package "curl"
+            install_package "wget"
+            install_package "stow"
+            install_package "build-essential"
+            
+            if $INSTALL_FZF; then install_package "fzf"; fi
+            if $INSTALL_BAT; then install_package "bat" || install_package "batcat"; fi
+            if $INSTALL_FD; then install_package "fd-find"; fi
+            if $INSTALL_TREE; then install_package "tree"; fi
+            if $INSTALL_TMUX; then install_package "tmux"; fi
+            if $INSTALL_MC; then install_package "mc"; fi
+            if $INSTALL_HTOP; then install_package "htop"; fi
+            if $INSTALL_DUF; then install_package "duf"; fi
+            if $INSTALL_DUST; then install_package "dust"; fi
+            if $INSTALL_JQ; then install_package "jq"; fi
+            if $INSTALL_RIPGREP; then install_package "ripgrep"; fi
+            if $INSTALL_MTR; then install_package "mtr"; fi
+            ;;
+        arch|endeavouros|manjaro)
+            log_to_file "INFO" "Running: sudo pacman -Sy"
+            if sudo pacman -Sy 2>&1 | tee -a "$LOG_FILE"; then
+                echo ""
+                log_success "✓ Package database synced"
+                log_to_file "SUCCESS" "Package database synced"
+            else
+                echo ""
+                log_warning "⚠ Failed to sync package database"
+                log_to_file "ERROR" "pacman -Sy failed"
+            fi
+            echo ""
+            
+            install_package "git"
+            install_package "curl"
+            install_package "wget"
+            install_package "stow"
+            install_package "base-devel"
+            
+            if $INSTALL_FZF; then install_package "fzf"; fi
+            if $INSTALL_BAT; then install_package "bat"; fi
+            if $INSTALL_FD; then install_package "fd"; fi
+            if $INSTALL_TREE; then install_package "tree"; fi
+            if $INSTALL_TMUX; then install_package "tmux"; fi
+            if $INSTALL_MC; then install_package "mc"; fi
+            if $INSTALL_HTOP; then install_package "htop"; fi
+            if $INSTALL_DUF; then install_package "duf"; fi
+            if $INSTALL_DUST; then install_package "dust"; fi
+            if $INSTALL_JQ; then install_package "jq"; fi
+            if $INSTALL_RIPGREP; then install_package "ripgrep"; fi
+            if $INSTALL_MTR; then install_package "mtr"; fi
+            ;;
+        *)
+            log_warning "Unsupported OS ($OS) - skipping package installation"
+            log_to_file "WARNING" "Unsupported OS: $OS"
+            return
+            ;;
+    esac
 }
 
 install_dust_portable() {
@@ -514,13 +519,22 @@ install_pyenv() {
     # Install pyenv build dependencies
     if [ "$HAS_SUDO" = true ]; then
         log_info "Installing pyenv build dependencies..."
-        local deps="make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev"
-        
-        for dep in $deps; do
-            if ! dpkg -l | grep -q "^ii  $dep "; then
-                sudo apt-get install -y "$dep" >> "$LOG_FILE" 2>&1 || log_warning "Failed to install $dep"
-            fi
-        done
+        case $OS in
+            ubuntu|debian)
+                local deps="make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev"
+                for dep in $deps; do
+                    if ! dpkg -l 2>/dev/null | grep -q "^ii  $dep "; then
+                        sudo apt-get install -y "$dep" >> "$LOG_FILE" 2>&1 || log_warning "Failed to install $dep"
+                    fi
+                done
+                ;;
+            arch|endeavouros|manjaro)
+                sudo pacman -S --noconfirm --needed base-devel openssl zlib bzip2 readline sqlite libffi xz tk libxml2 libxmlsec curl >> "$LOG_FILE" 2>&1 || log_warning "Failed to install pyenv dependencies"
+                ;;
+            *)
+                log_warning "Unsupported OS for pyenv dependencies"
+                ;;
+        esac
         log_success "pyenv dependencies installed"
     else
         log_warning "pyenv requires sudo to install build dependencies"
@@ -653,48 +667,55 @@ install_docker() {
         return
     fi
     
-    log_info "Installing Docker from official repository..."
+    case $OS in
+        ubuntu|debian)
+            log_info "Installing Docker from official repository..."
+            sudo apt-get update -qq
+            sudo apt-get install -y ca-certificates curl gnupg lsb-release 2>/dev/null
+            
+            sudo install -m 0755 -d /etc/apt/keyrings
+            [ -f /etc/apt/keyrings/docker.gpg ] && sudo rm /etc/apt/keyrings/docker.gpg
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            sudo chmod a+r /etc/apt/keyrings/docker.gpg
+            
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            
+            sudo apt-get update -qq
+            if sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null; then
+                log_success "Docker installed successfully"
+            else
+                log_error "Failed to install Docker"
+                return
+            fi
+            ;;
+        arch|endeavouros|manjaro)
+            log_info "Installing Docker from Arch repositories..."
+            if sudo pacman -S --noconfirm --needed docker docker-compose 2>/dev/null; then
+                log_success "Docker installed successfully"
+            else
+                log_error "Failed to install Docker"
+                return
+            fi
+            ;;
+        *)
+            log_warning "Unsupported OS for Docker installation"
+            return
+            ;;
+    esac
     
-    # Install prerequisites
-    sudo apt-get update -qq
-    sudo apt-get install -y ca-certificates curl gnupg lsb-release 2>/dev/null
+    # Start and enable Docker service (common for all distros)
+    sudo systemctl enable docker 2>/dev/null
+    sudo systemctl start docker 2>/dev/null
     
-    # Add Docker's official GPG key
-    sudo install -m 0755 -d /etc/apt/keyrings
-    if [ -f /etc/apt/keyrings/docker.gpg ]; then
-        sudo rm /etc/apt/keyrings/docker.gpg
-    fi
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    log_info "Adding user to docker group..."
+    sudo usermod -aG docker "$USER"
+    log_success "User added to docker group"
+    log_warning "You need to logout/login for docker group to take effect"
     
-    # Add Docker repository
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    
-    # Install Docker Engine
-    sudo apt-get update -qq
-    if sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null; then
-        log_success "Docker installed successfully"
-        
-        # Start and enable Docker service
-        sudo systemctl enable docker 2>/dev/null
-        sudo systemctl start docker 2>/dev/null
-        
-        # Add current user to docker group
-        log_info "Adding user to docker group..."
-        sudo usermod -aG docker "$USER"
-        log_success "User added to docker group"
-        log_warning "You need to logout/login for docker group to take effect"
-        
-        # Test docker (with sudo since group not yet active)
-        if sudo docker run --rm hello-world >/dev/null 2>&1; then
-            log_success "Docker test successful"
-        else
-            log_warning "Docker installed but test failed"
-        fi
+    if sudo docker run --rm hello-world >/dev/null 2>&1; then
+        log_success "Docker test successful"
     else
-        log_error "Failed to install Docker"
+        log_warning "Docker installed but test failed"
     fi
 }
 
