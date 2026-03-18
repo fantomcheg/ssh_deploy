@@ -1,0 +1,85 @@
+general.live_config_reload = true
+general.ipc_socket = true
+#general.import = ["~/.config/alacritty/themes/dracula.toml"]  # Отключено для работы ssh-theme.sh
+#general.import = ["~/.config/alacritty/themes/tokyo_night.toml"]
+
+
+ [terminal.shell]
+ program = "/bin/zsh"  # Или путь к вашему zsh
+ args = ["-lc", 'if tmux has-session -t main 2>/dev/null; then tmux new-window -t main -c "$PWD"; tmux attach -t main; else tmux new-session -s main -c "$PWD"; fi']
+
+ [terminal]
+ osc52 = "CopyPaste"
+
+
+ [font]
+ size = 18
+ 
+ [font.normal]
+ family = "JetBrainsMono Nerd Font Mono"
+ style = "Regular"
+ 
+ [font.bold]
+ family = "JetBrainsMono Nerd Font "
+ style = "Bold"
+ 
+ [font.italic]
+ family = "JetBrainsMono Nerd Font "
+ 
+ [scrolling]
+ history = 2000
+ 
+[window]
+dynamic_title = true
+#decorations_theme_variant = "Dark"
+opacity = 0.85
+#position = {x=887,y=40}
+dimensions = {columns = 45, lines = 30}
+#startup_mode = 'Fullscreen'
+ #blur = true
+ [selection]
+ save_to_clipboard = true
+ 
+ [keyboard]
+ bindings = [
+ ####{ key = "T", mods = "Control|Shift", action = "CreateNewWindow"},
+ { key = "Е", mods = "Control|Shift", action = "CreateNewWindow"},
+ { key = "C", mods = "Control|Shift", action = "Copy"},
+ { key = "V", mods = "Control|Shift", action = "Paste"},
+ { key = "М", mods = "Control|Shift", action = "Paste"},
+ { key = "С", mods = "Control|Shift", action = "Copy"},
+
+ #key_bindings:
+# Ctrl+Shift+Z → broot
+{ key = "Z", mods = "Control|Shift", chars = "\u0015br\n" },
+
+# Ctrl+Shift+X → nnn
+{ key = "X", mods = "Control|Shift", chars = "\u0015nnn\n" }
+
+#{ key = 'Delete', mods = 'None', chars = "\u007f" }
+]
+
+# Colors (Dracula) - embedded directly for ssh-theme.sh compatibility
+[colors.primary]
+background = '#282a36'
+foreground = '#f8f8f2'
+
+[colors.normal]
+black   = '#000000'
+red     = '#ff5555'
+green   = '#50fa7b'
+yellow  = '#f1fa8c'
+blue    = '#bd93f9'
+magenta = '#ff79c6'
+cyan    = '#8be9fd'
+white   = '#bbbbbb'
+
+[colors.bright]
+black   = '#555555'
+red     = '#ff5555'
+green   = '#50fa7b'
+yellow  = '#f1fa8c'
+blue    = '#caa9fa'
+magenta = '#ff79c6'
+cyan    = '#8be9fd'
+white   = '#ffffff'

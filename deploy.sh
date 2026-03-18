@@ -783,14 +783,14 @@ stow_packages() {
     
     cd "$DOTFILES_DIR" || exit 1
     
-    # Only essential packages for server environment
-    # Minimal setup: zsh, nvim, nnn + mc + broot
-    # Excludes: ssh, alacritty, kde, tmux (local/desktop-only tools)
+    # Core + optional packages
     local packages=("zsh" "nvim" "nnn")
     
-    # Add optional packages if installed
+    # Add optional packages if directories exist
     $INSTALL_MC && [ -d "mc" ] && packages+=("mc")
     $INSTALL_BROOT && [ -d "broot" ] && packages+=("broot")
+    [ -d "tmux" ] && packages+=("tmux")
+    [ -d "alacritty" ] && packages+=("alacritty")
     
     for package in "${packages[@]}"; do
         if [ -d "$package" ]; then
@@ -803,7 +803,7 @@ stow_packages() {
         fi
     done
     
-    log_info "Skipped packages (local-only): ssh, alacritty, kde, tmux"
+    log_info "Skipped packages (local-only): ssh, kde"
 }
 
 setup_nvim_plugins() {

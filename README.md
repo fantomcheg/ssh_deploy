@@ -33,7 +33,8 @@ That's it! ✨
   - Installed from official Docker repository
   - User automatically added to docker group (no sudo needed)
   - Includes docker-compose plugin
-- **tmux** - Terminal multiplexer (default config)
+- **tmux** - Terminal multiplexer (Catppuccin theme, TPM plugins)
+- **alacritty** - GPU-accelerated terminal emulator (Dracula theme, tmux integration)
 
 ### Development Environment
 - **pyenv** - Python version manager
@@ -210,8 +211,8 @@ Installs broot tree-view file manager:
 
 ##### **stow_packages()**
 Uses GNU Stow to symlink configurations:
-- **Stowed**: zsh, nvim, nnn, broot, fastfetch
-- **Excluded**: ssh, alacritty, kde, mc, tmux (local/desktop-only)
+- **Stowed**: zsh, nvim, nnn, mc, broot, tmux, alacritty
+- **Excluded**: ssh, kde (local/desktop-only)
 
 ##### **create_fd_bat_symlinks()**
 Creates compatibility symlinks:
@@ -313,7 +314,7 @@ Set to `false` to skip installation of specific tools.
 For security and relevance, the following are **excluded** from this public repository:
 
 - ❌ SSH keys and configs
-- ❌ Desktop-specific tools (Alacritty, KDE, Midnight Commander)
+- ❌ Desktop-specific tools (KDE)
 - ❌ Personal aliases and scripts
 - ❌ Work-related configurations
 - ❌ VPN configs and credentials
@@ -532,6 +533,8 @@ Fastfetch is configured with:
 - **Broot config**: `~/.config/broot/conf.hjson`
 - **Broot skin**: `~/.config/broot/skins/nnn-style.hjson`
 - **Fastfetch config**: `~/.config/fastfetch/config.jsonc`
+- **Tmux config**: `~/.config/tmux/tmux.conf`
+- **Alacritty config**: `~/.config/alacritty/alacritty.toml`
 
 ---
 
