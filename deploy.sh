@@ -124,7 +124,12 @@ detect_os() {
         . /etc/os-release
         OS=$ID
         VERSION=$VERSION_ID
-        log_success "Detected: $PRETTY_NAME"
+        # Normalize Arch-based distros (ID_LIKE is space-separated, e.g. "arch" or "arch manjaro")
+        case "$OS" in
+            arch|endeavouros|manjaro) ;;
+            *) [[ " ${ID_LIKE:-} " == *" arch "* ]] && OS="arch" ;;
+        esac
+        log_success "Detected: $PRETTY_NAME (OS=$OS)"
     else
         log_error "Cannot detect OS"
         exit 1
