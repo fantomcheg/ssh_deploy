@@ -573,17 +573,30 @@ install_broot() {
         return
     fi
     
-    # Install broot using official installation script
-    log_info "Installing broot from official installer..."
+    mkdir -p "$LOCAL_BIN"
+    log_info "Downloading broot (timeout 60s)..."
     
-    # Download and run the official installer
-    # The installer will prompt for confirmation, so we need to handle it
-    if curl -fsSL https://dystroy.org/broot/download/x86_64-linux/broot -o "$LOCAL_BIN/broot" 2>> "$LOG_FILE"; then
+    # Try dystroy.org first (with timeout to avoid hanging)
+    if curl -fsSL --connect-timeout 15 --max-time 60 \
+        https://dystroy.org/broot/download/x86_64-linux/broot -o "$LOCAL_BIN/broot" 2>> "$LOG_FILE"; then
+        :
+    # Fallback: GitHub releases (dystroy.org can be slow/unreachable)
+    elif BROOT_URL=$(curl -sL https://api.github.com/repos/Canop/broot/releases/latest 2>/dev/null | grep -o 'https://[^"]*broot[^"]*\.zip' | head -1); then
+        log_info "Using GitHub fallback..."
+        local temp_dir
+        temp_dir=$(mktemp -d)
+        if curl -fsSL --connect-timeout 15 --max-time 120 "$BROOT_URL" -o "$temp_dir/broot.zip" 2>> "$LOG_FILE" \
+            && (cd "$temp_dir" && (unzip -o -q broot.zip 2>/dev/null || bsdtar -xf broot.zip 2>/dev/null)) \
+            && BROOT_BIN=$(find "$temp_dir" -name "broot" -path "*x86_64-unknown-linux*" ! -path "*android*" 2>/dev/null | head -1); then
+            [ -n "$BROOT_BIN" ] && cp "$BROOT_BIN" "$LOCAL_BIN/broot"
+        fi
+        rm -rf "$temp_dir" 2>/dev/null
+    fi
+    
+    if [ -f "$LOCAL_BIN/broot" ]; then
         chmod +x "$LOCAL_BIN/broot"
         log_success "broot installed to $LOCAL_BIN/broot"
         
-        # Run broot --install to set up shell integration
-        # This creates ~/.config/broot/launcher/bash/br
         log_info "Setting up broot shell integration..."
         if echo | "$LOCAL_BIN/broot" --install >> "$LOG_FILE" 2>&1; then
             log_success "broot shell integration configured"
