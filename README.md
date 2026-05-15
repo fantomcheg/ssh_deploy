@@ -199,8 +199,7 @@ Installs pyenv Python version manager:
 Installs broot tree-view file manager:
 - Downloads official x86_64 Linux binary
 - Installs to ~/.local/bin/broot
-- Runs `broot --install` for shell integration
-- Creates launcher script at ~/.config/broot/launcher/bash/br
+- Uses repo-managed `br` shell function from `.zshrc`
 - Includes custom nnn-style color theme via stow
 
 #### 3. **Dotfiles Management**
@@ -571,10 +570,10 @@ exec zsh
 
 ### Broot launcher not working
 
-If `br` doesn't work, install the shell launcher:
+If `br` doesn't work, reload the repo-managed Zsh integration:
 
 ```bash
-broot --install
+stow -R zsh broot
 exec zsh
 ```
 

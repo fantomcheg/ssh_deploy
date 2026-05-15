@@ -54,6 +54,7 @@ INSTALL_RIPGREP=true
 INSTALL_MTR=true
 INSTALL_PYENV=true
 INSTALL_BROOT=true
+INSTALL_NERD_FONT=true
 
 # Helper functions
 init_logging() {
@@ -197,6 +198,7 @@ install_essential_packages() {
             install_package "wget"
             install_package "stow"
             install_package "build-essential"
+            install_package "unzip"
             
             if $INSTALL_FZF; then install_package "fzf"; fi
             if $INSTALL_BAT; then install_package "bat" || install_package "batcat"; fi
@@ -229,6 +231,7 @@ install_essential_packages() {
             install_package "wget"
             install_package "stow"
             install_package "base-devel"
+            install_package "unzip"
             
             if $INSTALL_FZF; then install_package "fzf"; fi
             if $INSTALL_BAT; then install_package "bat"; fi
@@ -249,6 +252,56 @@ install_essential_packages() {
             return
             ;;
     esac
+}
+
+install_nerd_font() {
+    if ! $INSTALL_NERD_FONT; then
+        return
+    fi
+
+    log_info "Setting up JetBrainsMono Nerd Font..."
+
+    local fonts_dir="$LOCAL_SHARE/fonts"
+    local marker="$fonts_dir/JetBrainsMonoNerdFont-Regular.ttf"
+
+    if [ -f "$marker" ] || (check_command fc-list && fc-list | grep -qi "JetBrainsMono Nerd Font"); then
+        log_success "JetBrainsMono Nerd Font already available"
+        return
+    fi
+
+    case $OS in
+        arch|endeavouros|manjaro)
+            if [ "$HAS_SUDO" = true ] && sudo pacman -S --noconfirm --needed ttf-jetbrains-mono-nerd >/dev/null 2>&1; then
+                log_success "JetBrainsMono Nerd Font installed from repositories"
+                check_command fc-cache && fc-cache -f >/dev/null 2>&1 || true
+                return
+            fi
+            ;;
+    esac
+
+    mkdir -p "$fonts_dir"
+
+    local temp_dir
+    temp_dir=$(mktemp -d)
+    local font_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
+
+    log_info "Downloading JetBrainsMono Nerd Font..."
+    if curl -fsSL --connect-timeout 15 --max-time 180 "$font_url" -o "$temp_dir/JetBrainsMono.zip" 2>> "$LOG_FILE"; then
+        if unzip -o -j "$temp_dir/JetBrainsMono.zip" '*.ttf' -d "$fonts_dir" >> "$LOG_FILE" 2>&1; then
+            log_success "JetBrainsMono Nerd Font installed to $fonts_dir"
+            if check_command fc-cache; then
+                fc-cache -f "$fonts_dir" >> "$LOG_FILE" 2>&1 || log_warning "Failed to refresh font cache"
+            else
+                log_warning "fc-cache not found; font may require relogin to appear"
+            fi
+        else
+            log_warning "Failed to extract JetBrainsMono Nerd Font archive"
+        fi
+    else
+        log_warning "Failed to download JetBrainsMono Nerd Font"
+    fi
+
+    rm -rf "$temp_dir" 2>/dev/null || true
 }
 
 install_dust_portable() {
@@ -597,13 +650,7 @@ install_broot() {
     if [ -f "$LOCAL_BIN/broot" ]; then
         chmod +x "$LOCAL_BIN/broot"
         log_success "broot installed to $LOCAL_BIN/broot"
-        
-        log_info "Setting up broot shell integration..."
-        if echo | "$LOCAL_BIN/broot" --install >> "$LOG_FILE" 2>&1; then
-            log_success "broot shell integration configured"
-        else
-            log_warning "broot shell integration setup may need manual configuration"
-        fi
+        log_success "broot shell integration is provided by repo .zshrc"
     else
         log_warning "Failed to install broot"
     fi
@@ -863,6 +910,7 @@ print_summary() {
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
     [ -d "$HOME/.pyenv" ] && echo -e "  ${GREEN}✓${NC} pyenv (Python version manager)"
     check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree viewer)"
+    ([ -f "$LOCAL_SHARE/fonts/JetBrainsMonoNerdFont-Regular.ttf" ] || (check_command fc-list && fc-list | grep -qi "JetBrainsMono Nerd Font")) && echo -e "  ${GREEN}✓${NC} JetBrainsMono Nerd Font"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
     echo -e "  1. ${YELLOW}Logout and login${NC} to apply shell changes (or run: exec zsh)"
@@ -917,6 +965,7 @@ main() {
     install_tmux
     install_pyenv
     install_broot
+    install_nerd_font
     # install_fastfetch - disabled, causes issues
     install_docker
     
