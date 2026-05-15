@@ -10,10 +10,10 @@ On your remote server:
 bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh)
 ```
 
-**Если получаете ошибку** `/dev/fd/63: No such file or directory` (EndeavourOS, Arch и др.) — используйте альтернативный способ:
+**Если получаете ошибку** `/dev/fd/63: No such file or directory` (EndeavourOS, Arch и др.) — используйте альтернативный способ. Не ставьте `sudo` перед `curl` и не пишите в `/tmp`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o /tmp/deploy.sh && bash /tmp/deploy.sh
+tmpfile="$(mktemp "$HOME/ssh_deploy.XXXXXX.sh")" && curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o "$tmpfile" && bash "$tmpfile"
 ```
 
 That's it! ✨
@@ -542,10 +542,10 @@ Fastfetch is configured with:
 
 ### Ошибка `/dev/fd/63: No such file or directory`
 
-На некоторых системах (EndeavourOS, Arch Linux и др.) process substitution `<(curl ...)` не работает из-за отсутствия `/dev/fd`. Используйте:
+На некоторых системах (EndeavourOS, Arch Linux и др.) process substitution `<(curl ...)` не работает из-за отсутствия `/dev/fd`. Используйте временный файл в `$HOME` и не запускайте `curl` через `sudo`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o /tmp/deploy.sh && bash /tmp/deploy.sh
+tmpfile="$(mktemp "$HOME/ssh_deploy.XXXXXX.sh")" && curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o "$tmpfile" && bash "$tmpfile"
 ```
 
 ### Missing tools after install

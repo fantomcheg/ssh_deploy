@@ -5,7 +5,8 @@
 #
 # Usage:
 #   bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh)
-#   # If /dev/fd error (EndeavourOS, Arch): curl -fsSL .../deploy.sh -o /tmp/deploy.sh && bash /tmp/deploy.sh
+#   # If /dev/fd error (EndeavourOS, Arch), avoid sudo before curl and use a unique temp file in $HOME:
+#   # tmpfile="$(mktemp "$HOME/ssh_deploy.XXXXXX.sh")" && curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/deploy.sh -o "$tmpfile" && bash "$tmpfile"
 #
 
 set -e
