@@ -851,7 +851,7 @@ stow_packages() {
         fi
     done
     
-    log_info "Skipped packages (local-only): ssh, kde"
+    log_info "Skipped packages outside main deploy: ssh, kde"
 }
 
 setup_nvim_plugins() {

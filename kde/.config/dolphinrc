@@ -1,0 +1,36 @@
+MenuBar=Disabled
+
+[ContextMenu]
+ShowAddToPlaces=false
+ShowDuplicateHere=false
+
+[DetailsMode]
+LeftPadding=0
+PreviewSize=112
+RightPadding=0
+
+[ExtractDialog]
+2 screens: Height=720
+2 screens: Width=2125
+3440x1440 screen: Height=720
+3440x1440 screen: Width=2125
+DirHistory[$e]=$HOME/Desktop/,$HOME/.local/share/Steam/steamapps/common/Starfield/,$HOME/.local/share/Steam/steamapps/common/Starfield/Data/,$HOME/.local/share/Steam/steamapps/common/Starfield/Starfield/,$HOME/Projects/zakorov/img/,/mnt/SteamLibrary/steamapps/common/S.T.A.L.K.E.R. 2 Heart of Chornobyl/Stalker2/Content/Paks/~mods/,/mnt/SteamLibrary/steamapps/common/S.T.A.L.K.E.R. 2 Heart of Chornobyl/Stalker2/Content/Paks/,/mnt/SteamLibrary/steamapps/common/Starfield/Data/,/mnt/SteamLibrary/steamapps/common/Starfield/
+
+[General]
+ShowFullPath=true
+ShowFullPathInTitlebar=true
+Version=202
+ViewPropsTimestamp=2025,7,14,16,18,57.85
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=22
+
+[MainWindow]
+MenuBar=Disabled
+
+[Notification Messages]
+warnAboutRisksBeforeActingAsAdmin=false
+
+[PreviewSettings]
+Plugins=ffmpegthumbnailer,appimagethumbnail,audiothumbnail,blenderthumbnail,comicbookthumbnail,cursorthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,directorythumbnail,fontthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,gsf-office,mltpreview,mobithumbnail,opendocumentthumbnail,gsthumbnail,rawthumbnail,svgthumbnail,ffmpegthumbs,gdk-pixbuf-thumbnailer

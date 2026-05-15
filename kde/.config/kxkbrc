@@ -1,0 +1,8 @@
+[Layout]
+DisplayNames=,
+LayoutList=us,ru
+Options=caps:numlock,altwin:menu_win
+ResetOldOptions=true
+SwitchMode=Window
+Use=true
+VariantList=,

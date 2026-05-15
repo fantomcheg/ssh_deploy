@@ -18,6 +18,12 @@ tmpfile="$(mktemp "$HOME/ssh_deploy.XXXXXX.sh")" && curl -fsSL https://raw.githu
 
 That's it! ✨
 
+Optional KDE/Plasma setup is separate from the server deploy:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/install_kde.sh)
+```
+
 ---
 
 ## 📦 What Gets Installed
@@ -211,7 +217,7 @@ Installs broot tree-view file manager:
 ##### **stow_packages()**
 Uses GNU Stow to symlink configurations:
 - **Stowed**: zsh, nvim, nnn, mc, broot, tmux, alacritty
-- **Excluded**: ssh, kde (local/desktop-only)
+- **Excluded from main deploy**: ssh, kde
 
 ##### **create_fd_bat_symlinks()**
 Creates compatibility symlinks:
@@ -567,6 +573,27 @@ git pull
 stow -R zsh nvim nnn broot fastfetch
 exec zsh
 ```
+
+### Optional KDE setup
+
+KDE/Plasma settings are applied separately from the main deploy:
+
+```bash
+bash ~/ssh_deploy/install_kde.sh
+```
+
+This applies the KDE package from `~/ssh_deploy/kde`, including:
+- `~/.config/kdeglobals`
+- `~/.config/kwinrc`
+- `~/.config/kwinrulesrc`
+- `~/.config/kxkbrc`
+- `~/.config/plasmashellrc`
+- `~/.config/plasma-org.kde.plasma.desktop-appletsrc`
+- `~/.config/kglobalshortcutsrc`
+- `~/.config/dolphinrc`
+- `~/.local/share/kxmlgui5/dolphin/dolphinui.rc`
+
+Before applying, the installer backs up conflicting existing files to `~/.local/state/ssh_deploy/`.
 
 ### Broot launcher not working
 
