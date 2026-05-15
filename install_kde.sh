@@ -57,7 +57,17 @@ detect_os() {
 
 ensure_repo() {
     if [ -d "$DOTFILES_DIR/.git" ]; then
-        log_success "Using existing repository at $DOTFILES_DIR"
+        log_info "Using existing repository at $DOTFILES_DIR"
+
+        if check_command git; then
+            log_info "Updating repository to get the latest KDE package..."
+            if git -C "$DOTFILES_DIR" pull --ff-only origin main >/dev/null 2>&1; then
+                log_success "Repository updated"
+            else
+                log_warning "Failed to update existing repository automatically"
+                log_warning "If KDE package is missing, run: cd $DOTFILES_DIR && git pull --ff-only origin main"
+            fi
+        fi
         return
     fi
 
@@ -137,6 +147,8 @@ backup_existing_kde_files() {
 apply_kde_settings() {
     if [ ! -d "$KDE_DIR" ]; then
         log_warning "No kde package found in $DOTFILES_DIR"
+        log_warning "This usually means $DOTFILES_DIR is an old clone without the new KDE package."
+        log_warning "Fix: cd $DOTFILES_DIR && git pull --ff-only origin main"
         return 0
     fi
 
