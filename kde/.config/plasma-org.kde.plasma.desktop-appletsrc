@@ -47,47 +47,6 @@ remove=true
 [ActionPlugins][1]
 RightButton;NoModifier=org.kde.contextmenu
 
-[Containments][1]
-ItemGeometries-1024x768=
-ItemGeometries-1173x491=
-ItemGeometries-1707x960=
-ItemGeometries-2039x1147=
-ItemGeometries-2048x1152=
-ItemGeometries-2196x919=
-ItemGeometries-2293x960=
-ItemGeometries-2560x1440=
-ItemGeometries-2752x1152=
-ItemGeometries-2991x1252=
-ItemGeometries-3072x1728=
-ItemGeometries-3440x1440=
-ItemGeometries-3653x1529=
-ItemGeometries-3840x2160=
-ItemGeometries-546x410=
-ItemGeometries-6880x2880=
-ItemGeometriesHorizontal=
-activityId=da688617-bf07-4661-91a4-806563a58b6f
-formfactor=0
-immutability=1
-lastScreen=0
-location=0
-plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.image
-
-[Containments][1][ConfigDialog]
-DialogHeight=929
-DialogWidth=720
-
-[Containments][1][General]
-changedPositions={"desktop:/DAST":["3440x1440","0","0"],"desktop:/photo_2026-03-07_05-49-30.jpg":["3440x1440","0","1"],"desktop:/photo_2026-03-13_09-52-28.jpg":["3440x1440","0","2"]}
-lastResolution=3440x1440
-positions={"1024x768":["1","9","desktop:/THE-web-application-hackers-handbook.pdf","0","1"],"1173x491":["1","10"],"1536x864":["1","14","desktop:/Screenshot_20260331_152758.png","0","1"],"2048x1152":["1","18"],"2196x919":["1","20","desktop:/THE-web-application-hackers-handbook.pdf","0","1"],"2293x960":[],"2560x1440":["1","23"],"2752x1152":["1","25","desktop:/Music.m3u","0","24"],"2991x1252":[],"3072x1728":["1","28","desktop:/Screenshot_20260331_152758.png","0","1"],"3277x1728":["1","30","desktop:/Screenshot_20260331_152758.png","0","1"],"3440x1440":["1","31","desktop:/photo_2026-03-13_09-52-28.jpg","0","2","desktop:/DAST","0","0","desktop:/photo_2026-03-07_05-49-30.jpg","0","1","desktop:/pako_eNp1V21z2jgQ_isaf7hp5-LU5i0hc3MzYMKVTggUu2mnky_C3oAOI_kkOSnp9L_fyoYiGfIN70qrR7vPPit-eqnIwLvxtoxnW1o8ckKkEPrdu2G5IkNRcr37ayk__L0Q1Pir32E3IC8AG_X-vVlPyHxNFZBJ5RyXPKNb4JrmqjJ8NStJ6Lc69WJCjAUNncr9MUnmZEgVS9XBT0hlnEuhRSryo3kKei0yRf4gsaa6VCRC8PY2oBl.png","0","5"],"3653x1529":["1","33"],"3840x2160":["1","35","desktop:/THE-web-application-hackers-handbook.pdf","0","1"],"546x410":["1","5"],"6880x2880":["1","63","desktop:/BurpSuite.desktop","0","1"]}
-sortMode=-1
-
-[Containments][1][Wallpaper][org.kde.image][General]
-Blur=true
-Image=/home/xrapid/Pictures/Endy_planet.png
-SlidePaths=/usr/share/wallpapers/
-
 [Containments][2]
 activityId=
 formfactor=2
@@ -118,8 +77,8 @@ immutability=1
 plugin=org.kde.plasma.kickoff
 
 [Containments][2][Applets][35][Configuration]
-popupHeight=559
-popupWidth=763
+popupHeight=593
+popupWidth=807
 
 [Containments][2][Applets][35][Configuration][ConfigDialog]
 DialogHeight=541
@@ -135,7 +94,7 @@ plugin=org.kde.plasma.panelspacer
 
 [Containments][2][Applets][36][Configuration][General]
 expanding=false
-length=1560
+length=790
 
 [Containments][2][Applets][39]
 immutability=1
@@ -308,36 +267,20 @@ AppletOrder=35;36;39;6;7;20;44;45
 [Containments][2][Shortcuts]
 global=
 
-[Containments][26]
-ItemGeometries-2560x1440=
+[Containments][46]
+ItemGeometries-1920x1080=
 ItemGeometriesHorizontal=
-activityId=da688617-bf07-4661-91a4-806563a58b6f
+activityId=d4fba680-b03f-46d6-86a2-e9aa7c887e1e
 formfactor=0
 immutability=1
-lastScreen=1
+lastScreen=0
 location=0
 plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
-[Containments][26][ConfigDialog]
-DialogHeight=540
-DialogWidth=720
-
-[Containments][26][General]
-positions={"2039x1147":[],"2048x1152":[],"2560x1440":[],"2752x1152":[],"3440x1440":[],"3653x1529":[],"3840x2160":[],"6880x2880":[]}
-
-[Containments][28]
-activityId=da688617-bf07-4661-91a4-806563a58b6f
-formfactor=0
-immutability=1
-lastScreen=2
-location=0
-plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.image
-
-[Containments][28][General]
-positions={"1920x1080":[]}
+[Containments][46][Wallpaper][org.kde.image][General]
+Image=/home/punk/Изображения/pvclub.PNG
 
 [ScreenMapping]
 itemsOnDisabledScreens=1,da688617-bf07-4661-91a4-806563a58b6f,1,desktop:/THE-web-application-hackers-handbook.pdf
-screenMapping=desktop:/photo_2026-03-13_09-52-28.jpg,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:Music.m3u,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:New Folder,0,da688617-bf07-4661-91a4-806563a58b6f,file:///home/xrapid/Desktop/CodeCademy.desktop,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:1.txt,0,da688617-bf07-4661-91a4-806563a58b6f,file:///home/xrapid/Desktop/1.ods,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:/photo_2026-03-07_05-49-30.jpg,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:/pako_eNp1V21z2jgQ_isaf7hp5-LU5i0hc3MzYMKVTggUu2mnky_C3oAOI_kkOSnp9L_fyoYiGfIN70qrR7vPPit-eqnIwLvxtoxnW1o8ckKkEPrdu2G5IkNRcr37ayk__L0Q1Pir32E3IC8AG_X-vVlPyHxNFZBJ5RyXPKNb4JrmqjJ8NStJ6Lc69WJCjAUNncr9MUnmZEgVS9XBT0hlnEuhRSryo3kKei0yRf4gsaa6VCRC8PY2oBl.png,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:/DAST,0,da688617-bf07-4661-91a4-806563a58b6f
+screenMapping=desktop:/pako_eNp1V21z2jgQ_isaf7hp5-LU5i0hc3MzYMKVTggUu2mnky_C3oAOI_kkOSnp9L_fyoYiGfIN70qrR7vPPit-eqnIwLvxtoxnW1o8ckKkEPrdu2G5IkNRcr37ayk__L0Q1Pir32E3IC8AG_X-vVlPyHxNFZBJ5RyXPKNb4JrmqjJ8NStJ6Lc69WJCjAUNncr9MUnmZEgVS9XBT0hlnEuhRSryo3kKei0yRf4gsaa6VCRC8PY2oBl.png,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:/DAST,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:/photo_2026-03-07_05-49-30.jpg,0,da688617-bf07-4661-91a4-806563a58b6f,file:///home/xrapid/Desktop/1.ods,0,da688617-bf07-4661-91a4-806563a58b6f,file:///home/xrapid/Desktop/CodeCademy.desktop,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:Music.m3u,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:/photo_2026-03-13_09-52-28.jpg,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:1.txt,0,da688617-bf07-4661-91a4-806563a58b6f,desktop:New Folder,0,da688617-bf07-4661-91a4-806563a58b6f

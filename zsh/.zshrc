@@ -1,19 +1,24 @@
 #####
 # Документация для .zshrc
 
-# DEBUG: Enable detailed logging
-ZSHRC_DEBUG=true
+# DEBUG: set ZSHRC_DEBUG=true before sourcing this file to log startup steps.
+: ${ZSHRC_DEBUG:=false}
 ZSHRC_LOG="$HOME/.zshrc_load.log"
 
 debug_log() {
     if [ "$ZSHRC_DEBUG" = true ]; then
-        echo "[$(date '+%H:%M:%S.%3N')] $1" | tee -a "$ZSHRC_LOG"
+        echo "[$(date '+%H:%M:%S.%3N')] $1" >> "$ZSHRC_LOG"
     fi
 }
 
 # Start logging
-echo "==================== ZSHRC LOAD START ====================" > "$ZSHRC_LOG"
+if [ "$ZSHRC_DEBUG" = true ]; then
+    echo "==================== ZSHRC LOAD START ====================" > "$ZSHRC_LOG"
+fi
 debug_log "START: Loading .zshrc"
+
+# PV Club startup splash. Keep it before Powerlevel10k instant prompt.
+[[ -f ~/.config/zsh/pvclub-splash.zsh ]] && source ~/.config/zsh/pvclub-splash.zsh
 
 ## Инициализация Powerlevel10k
 # Включает мгновенный промпт Powerlevel10k для ускорения загрузки оболочки.
@@ -222,7 +227,7 @@ export FZF_DEFAULT_COMMAND="find ~+ -type f"
 
 ## Пути для pdtm
 # Добавляет путь к pdtm в PATH.
-export PATH=$PATH:/home/xrapid/.pdtm/go/bin
+export PATH="$PATH:$HOME/.pdtm/go/bin"
 debug_log "STEP 17: Done"
 
 ## Псевдонимы Tmux
@@ -285,7 +290,6 @@ alias vim='nvim'
 # Открытие старых файлов через Telescope.
 alias nvimr='nvim +"Telescope\ oldfiles"'
 # Замена nano на nvim.
-alias nano='nvim'
 # Редактирование .zshrc.
 alias nvimz='nvim ~/.zshrc'
 alias nvimai='nvim ~/.zsh_ai_aliases'
@@ -297,10 +301,15 @@ alias nvimt='nvim ~/.config/tmux/tmux.conf'
 # Редактирование конфигурации Alacritty.
 alias nvima='nvim ~/.config/alacritty/alacritty.toml'
 # Открытие файла через FZF.
-alias nvimf='nvim $(fzf --walker-skip=.steam,.local --walker=file,hidden, --walker-root=/home/xrapid)'
+alias nvimf='nvim $(fzf --walker-skip=.steam,.local --walker=file,hidden, --walker-root="$HOME")'
 # Установка Neovim как редактора по умолчанию.
 export EDITOR="nvim"
 export VISUAL="nvim"
+export SUDO_EDITOR="nvim"
+export GIT_EDITOR="nvim"
+export SYSTEMD_EDITOR="nvim"
+export FCEDIT="nvim"
+export BROOT_EDITOR="nvim"
 
 ## Псевдонимы для перезагрузки конфигураций
 # Перезагрузка конфигурации Tmux.
@@ -343,7 +352,7 @@ export NNN_FCOLORS="D4DEB778E79F9F67D2E5E5D2"
 # Включение корзины.
 export NNN_TRASH=1
 # Закладки для быстрого доступа.
-export NNN_BMS='h:/home/xrapid/;y:/mnt/Yandex.Disk/;c:~/.config/;p:~/Projects;d:~/dotfiles/'
+export NNN_BMS="h:$HOME/;y:/mnt/Yandex.Disk/;c:$HOME/.config/;p:$HOME/Projects;d:$HOME/dotfiles/"
 
 # --- Midnight Commander: выход в текущую директорию ---
 mc() {

@@ -21,6 +21,7 @@ DOTFILES_REPO="https://github.com/fantomcheg/ssh_deploy.git"
 DOTFILES_DIR="${SSH_DEPLOY_DIR:-$HOME/ssh_deploy}"
 KDE_DIR="$DOTFILES_DIR/kde"
 BACKUP_ROOT="$HOME/.local/state/ssh_deploy"
+WALLPAPER_PATH="$HOME/.local/share/wallpapers/pvclub/pvclub.PNG"
 
 log_info() {
     echo -e "${BLUE}ℹ${NC} $1"
@@ -144,6 +145,50 @@ backup_existing_kde_files() {
     fi
 }
 
+apply_wallpaper() {
+    if [ ! -f "$WALLPAPER_PATH" ]; then
+        log_warning "PV Club wallpaper is missing at $WALLPAPER_PATH"
+        return
+    fi
+
+    if check_command plasma-apply-wallpaperimage; then
+        log_info "Applying PV Club desktop wallpaper..."
+        if plasma-apply-wallpaperimage "$WALLPAPER_PATH" >/dev/null 2>&1; then
+            log_success "Desktop wallpaper applied"
+        else
+            log_warning "Failed to apply desktop wallpaper automatically"
+        fi
+    else
+        log_warning "plasma-apply-wallpaperimage is unavailable; using stowed KDE wallpaper settings"
+    fi
+
+    if check_command kwriteconfig6; then
+        log_info "Persisting PV Club wallpaper paths in KDE configs..."
+        kwriteconfig6 --file plasma-org.kde.plasma.desktop-appletsrc \
+            --group Containments \
+            --group 46 \
+            --group Wallpaper \
+            --group org.kde.image \
+            --group General \
+            --key Image "$WALLPAPER_PATH"
+        kwriteconfig6 --file kscreenlockerrc \
+            --group Greeter \
+            --group Wallpaper \
+            --group org.kde.image \
+            --group General \
+            --key Image "$WALLPAPER_PATH"
+        kwriteconfig6 --file kscreenlockerrc \
+            --group Greeter \
+            --group Wallpaper \
+            --group org.kde.image \
+            --group General \
+            --key PreviewImage "$WALLPAPER_PATH"
+        log_success "Desktop and lock screen wallpaper paths applied"
+    else
+        log_warning "kwriteconfig6 is unavailable; lock screen wallpaper was not configured"
+    fi
+}
+
 apply_kde_settings() {
     if [ ! -d "$KDE_DIR" ]; then
         log_warning "No kde package found in $DOTFILES_DIR"
@@ -161,6 +206,8 @@ apply_kde_settings() {
         log_error "Failed to apply KDE settings"
         exit 1
     fi
+
+    apply_wallpaper
 
     echo ""
     echo -e "${CYAN}Next steps:${NC}"

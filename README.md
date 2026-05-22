@@ -24,6 +24,14 @@ Optional KDE/Plasma setup is separate from the server deploy:
 bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/install_kde.sh)
 ```
 
+PV Club EndeavourOS workstations use the desktop security layer instead:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/install_pvclub.sh)
+```
+
+If process substitution is unavailable, download `install_pvclub.sh` to a unique temp file under `$HOME` and run it with `bash`, like the fallback command above for `deploy.sh`.
+
 ---
 
 ## 📦 What Gets Installed
@@ -32,6 +40,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/i
 - **zsh** - Modern shell with zinit plugin manager
 - **powerlevel10k** - Beautiful and fast prompt theme
 - **neovim** - Modern text editor with lazy.nvim plugin manager
+- **Python Neovim provider** - Enables Python-backed Neovim plugins
 - **nnn** - Lightning-fast terminal file manager with plugins
 
 ### DevOps & Containers
@@ -75,6 +84,18 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/i
 - **dog** - Modern DNS client (better dig alternative)
 
 All tools work seamlessly together and are configured via dotfiles.
+
+### PV Club EndeavourOS Layer
+
+`install_pvclub.sh` runs the base deploy, adds club workstation tools recorded from the EndeavourOS setup, and applies KDE settings and the PV Club wallpaper by default:
+
+- Repository packages: Chromium, Code, Python pip, DNS/network utilities, Wireshark, Nmap/Zenmap, Gobuster, Hashcat, Hydra, John, Masscan, Metasploit, RustScan, SQLMap, tcpdump, WPScan, and ZAP.
+- AUR packages through `yay`: Amass, Amnezia VPN, AmneziaWG, Burp Suite, Caido, CyberChef, DirBuster, Feroxbuster, ffuf, gau, Pamac All, waybackurls, and Sublime Text.
+- User setup: Docker remains handled by the base deploy; the club layer adds Wireshark group access when that group exists.
+
+Set `PVCLUB_INSTALL_AUR=false` to skip AUR packages or `PVCLUB_INSTALL_KDE=false` to skip KDE settings when testing a smaller install.
+
+Set `PVCLUB_HOSTNAME=pvclub02` when running `install_pvclub.sh` to name a workstation during setup, or run `set_pvclub_hostname.sh --next` afterwards to pick the first apparently free `pvclubNN` name found by local resolution and ping.
 
 ---
 
@@ -235,6 +256,10 @@ Configures PATH environment:
 ##### **setup_nvim_plugins()**
 - Informs about lazy.nvim auto-installation
 - Plugins install on first `nvim` launch
+
+##### **setup_tmux_plugins()**
+- Runs the bundled TPM installer after tmux dotfiles are stowed
+- Pulls missing tmux plugins without requiring the manual TPM keybinding step
 
 ##### **run_tests()**
 Comprehensive testing suite that validates installation:

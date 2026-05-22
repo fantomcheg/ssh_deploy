@@ -33,8 +33,10 @@ general.ipc_socket = true
  dynamic_title = true
  #decorations_theme_variant = "Dark"
  opacity = 0.85
- position = {x=887,y=250}
- dimensions =  {columns = 220, lines = 40}
+ # Let KDE place the window on the current monitor.
+ # The previous 220 columns exceeded a 1920x1080 display at font size 18.
+ #position = {x=887,y=250}
+ dimensions = {columns = 120, lines = 36}
  #startup_mode = 'Fullscreen'
  #blur = true
  [selection]
@@ -83,4 +85,3 @@ blue    = '#caa9fa'
 magenta = '#ff79c6'
 cyan    = '#8be9fd'
 white   = '#ffffff'
-

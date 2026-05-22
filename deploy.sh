@@ -199,6 +199,7 @@ install_essential_packages() {
             install_package "stow"
             install_package "build-essential"
             install_package "unzip"
+            install_package "python3-pynvim"
             
             if $INSTALL_FZF; then install_package "fzf"; fi
             if $INSTALL_BAT; then install_package "bat" || install_package "batcat"; fi
@@ -232,6 +233,7 @@ install_essential_packages() {
             install_package "stow"
             install_package "base-devel"
             install_package "unzip"
+            install_package "python-pynvim"
             
             if $INSTALL_FZF; then install_package "fzf"; fi
             if $INSTALL_BAT; then install_package "bat"; fi
@@ -806,6 +808,11 @@ create_fd_bat_symlinks() {
 clone_dotfiles() {
     log_info "Cloning dotfiles repository..."
     
+    if [ -d "$DOTFILES_DIR/.git" ]; then
+        log_info "Using existing dotfiles repository at $DOTFILES_DIR"
+        return 0
+    fi
+
     if [ -d "$DOTFILES_DIR" ]; then
         log_warning "Dotfiles directory already exists"
         read -p "Remove and re-clone? (y/N): " -n 1 -r
@@ -860,6 +867,27 @@ setup_nvim_plugins() {
     if check_command nvim; then
         log_info "Lazy.nvim will auto-install plugins on first run"
         log_success "Run 'nvim' to trigger plugin installation"
+    fi
+}
+
+setup_tmux_plugins() {
+    log_info "Setting up tmux plugins..."
+
+    local tpm_installer="$HOME/.config/tmux/plugins/tpm/bin/install_plugins"
+    if ! check_command tmux; then
+        log_warning "tmux not found; skipping tmux plugin install"
+        return
+    fi
+
+    if [ ! -x "$tpm_installer" ]; then
+        log_warning "TPM installer not found at $tpm_installer"
+        return
+    fi
+
+    if "$tpm_installer" >> "$LOG_FILE" 2>&1; then
+        log_success "tmux plugins installed with TPM"
+    else
+        log_warning "tmux plugin install failed (check $LOG_FILE)"
     fi
 }
 
@@ -983,6 +1011,7 @@ main() {
     create_fd_bat_symlinks
     
     setup_nvim_plugins
+    setup_tmux_plugins
     
     print_summary
     
@@ -994,7 +1023,7 @@ main() {
     log_info "Deployment finished successfully!"
     
     # EXEC ZSH at the END - after stow created .zshrc
-    if check_command zsh; then
+    if check_command zsh && [ "${SSH_DEPLOY_NO_EXEC_ZSH:-false}" != true ]; then
         echo ""
         echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
         echo -e "${GREEN}║  🚀 SWITCHING TO ZSH NOW...                                  ║${NC}"
@@ -1003,6 +1032,8 @@ main() {
         echo ""
         log_to_file "INFO" "Switching to zsh with 'exec zsh -l'"
         exec zsh -l
+    elif check_command zsh; then
+        log_info "Skipping automatic zsh switch because SSH_DEPLOY_NO_EXEC_ZSH=true"
     else
         log_warning "zsh not found"
     fi
