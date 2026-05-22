@@ -31,6 +31,7 @@ REPO_PACKAGES=(
     alacritty
     chromium
     code
+    iptux
     jdk21-openjdk
     linux-firmware-amdgpu
     python-pip
