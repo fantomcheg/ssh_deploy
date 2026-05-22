@@ -29,6 +29,7 @@ REPO_PACKAGES=(
     alacritty
     chromium
     code
+    jdk21-openjdk
     python-pip
     whois
     bind
