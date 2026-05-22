@@ -234,6 +234,7 @@ install_essential_packages() {
             install_package "base-devel"
             install_package "unzip"
             install_package "python-pynvim"
+            install_package "tree-sitter-cli"
             
             if $INSTALL_FZF; then install_package "fzf"; fi
             if $INSTALL_BAT; then install_package "bat"; fi

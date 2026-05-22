@@ -144,6 +144,7 @@ Installs core system packages:
 - git, curl, wget (for downloading)
 - stow (for dotfiles management)
 - build-essential (compilers)
+- Python Neovim provider and Tree-sitter CLI on Arch/EndeavourOS
 - fzf, bat/batcat, fd-find, tree (modern CLI tools)
 - tmux (terminal multiplexer)
 - mc (Midnight Commander)
