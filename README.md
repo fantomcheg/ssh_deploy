@@ -25,8 +25,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/i
 ```
 
 The KDE installer backs up existing Plasma config files, pauses `plasmashell`,
-copies the PV Club panel layout as writable KDE config, and starts Plasma again.
-This avoids merging a live default panel with the saved club layout.
+copies the PV Club panel layout as writable KDE config, installs the PV Club
+wallpaper into the user's XDG Pictures directory, and starts Plasma again. This
+avoids merging a live default panel with the saved club layout.
 
 PV Club EndeavourOS workstations use the desktop security layer instead:
 

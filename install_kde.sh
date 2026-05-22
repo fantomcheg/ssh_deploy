@@ -21,7 +21,8 @@ DOTFILES_REPO="https://github.com/fantomcheg/ssh_deploy.git"
 DOTFILES_DIR="${SSH_DEPLOY_DIR:-$HOME/ssh_deploy}"
 KDE_DIR="$DOTFILES_DIR/kde"
 BACKUP_ROOT="$HOME/.local/state/ssh_deploy"
-WALLPAPER_PATH="$HOME/.local/share/wallpapers/pvclub/pvclub.PNG"
+WALLPAPER_ASSET_PATH="$HOME/.local/share/wallpapers/pvclub/pvclub.PNG"
+WALLPAPER_PATH="$WALLPAPER_ASSET_PATH"
 PLASMA_SHELL_WAS_RUNNING=false
 
 log_info() {
@@ -161,6 +162,40 @@ copy_kde_settings() {
     fi
 }
 
+get_pictures_dir() {
+    local pictures_dir=""
+
+    if check_command xdg-user-dir; then
+        pictures_dir=$(xdg-user-dir PICTURES 2>/dev/null || true)
+    fi
+
+    if [ -n "$pictures_dir" ] && [ "$pictures_dir" != "$HOME" ]; then
+        printf '%s\n' "$pictures_dir"
+    else
+        printf '%s\n' "$HOME/Изображения"
+    fi
+}
+
+copy_wallpaper_to_pictures() {
+    local pictures_dir
+
+    if [ ! -f "$WALLPAPER_ASSET_PATH" ]; then
+        log_warning "PV Club wallpaper asset is missing at $WALLPAPER_ASSET_PATH"
+        return
+    fi
+
+    pictures_dir=$(get_pictures_dir)
+    WALLPAPER_PATH="$pictures_dir/pvclub.PNG"
+
+    log_info "Copying PV Club wallpaper to $pictures_dir..."
+    if mkdir -p "$pictures_dir" && cp -f "$WALLPAPER_ASSET_PATH" "$WALLPAPER_PATH"; then
+        log_success "PV Club wallpaper copied to $WALLPAPER_PATH"
+    else
+        WALLPAPER_PATH="$WALLPAPER_ASSET_PATH"
+        log_warning "Failed to copy wallpaper to Pictures; using $WALLPAPER_PATH"
+    fi
+}
+
 apply_wallpaper() {
     local applets_config="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
@@ -238,6 +273,7 @@ apply_kde_settings() {
     backup_existing_kde_files
     copy_kde_settings
 
+    copy_wallpaper_to_pictures
     apply_wallpaper
     apply_empty_session
     start_plasma_shell
