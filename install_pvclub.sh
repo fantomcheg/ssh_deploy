@@ -23,6 +23,7 @@ DOTFILES_REPO="https://github.com/fantomcheg/ssh_deploy.git"
 DOTFILES_DIR="${SSH_DEPLOY_DIR:-$HOME/ssh_deploy}"
 INSTALL_KDE="${PVCLUB_INSTALL_KDE:-true}"
 INSTALL_AUR="${PVCLUB_INSTALL_AUR:-true}"
+TELEGRAM_MTPROXY_URI="tg://proxy?server=93.77.190.66&port=2443&secret=7koPi9XCIE1vfq3xpvOjjBR5YW5kZXgucnU"
 
 REPO_PACKAGES=(
     chromium
@@ -61,6 +62,7 @@ AUR_PACKAGES=(
     pamac-all
     waybackurls
     sublime-text-4
+    telegram-desktop
 )
 
 log_info() {
@@ -171,6 +173,22 @@ install_aur_packages() {
     fi
 }
 
+configure_telegram_proxy() {
+    if ! check_command telegram-desktop; then
+        log_warning "telegram-desktop not found; skipping Telegram proxy launch"
+        return
+    fi
+
+    log_info "Opening Telegram with the PV Club MTProto proxy link..."
+    if check_command xdg-open && xdg-open "$TELEGRAM_MTPROXY_URI" >/dev/null 2>&1; then
+        log_success "Telegram proxy link opened"
+        return
+    fi
+
+    telegram-desktop "$TELEGRAM_MTPROXY_URI" >/dev/null 2>&1 &
+    log_success "Telegram started with the proxy link"
+}
+
 run_base_deploy() {
     log_info "Running base ssh_deploy setup"
     SSH_DEPLOY_NO_EXEC_ZSH=true bash "$DOTFILES_DIR/deploy.sh"
@@ -224,6 +242,7 @@ main() {
     run_base_deploy
     install_repo_packages
     install_aur_packages
+    configure_telegram_proxy
     configure_groups
     configure_hostname
     apply_kde_settings
