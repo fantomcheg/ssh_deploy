@@ -22,6 +22,7 @@ DOTFILES_DIR="${SSH_DEPLOY_DIR:-$HOME/ssh_deploy}"
 KDE_DIR="$DOTFILES_DIR/kde"
 BACKUP_ROOT="$HOME/.local/state/ssh_deploy"
 WALLPAPER_PATH="$HOME/.local/share/wallpapers/pvclub/pvclub.PNG"
+PLASMA_SHELL_WAS_RUNNING=false
 
 log_info() {
     echo -e "${BLUE}ℹ${NC} $1"
@@ -41,19 +42,6 @@ log_error() {
 
 check_command() {
     command -v "$1" >/dev/null 2>&1
-}
-
-detect_os() {
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        OS=$ID
-        case "$OS" in
-            arch|endeavouros|manjaro) ;;
-            *) [[ " ${ID_LIKE:-} " == *" arch "* ]] && OS="arch" ;;
-        esac
-    else
-        OS="unknown"
-    fi
 }
 
 ensure_repo() {
@@ -81,36 +69,6 @@ ensure_repo() {
     fi
 }
 
-ensure_stow() {
-    if check_command stow; then
-        log_success "stow already installed"
-        return
-    fi
-
-    detect_os
-    if ! check_command sudo; then
-        log_error "stow is required. Install it manually and rerun this script."
-        exit 1
-    fi
-
-    log_info "Installing stow..."
-    case "${OS:-unknown}" in
-        ubuntu|debian)
-            sudo apt-get update -qq
-            sudo apt-get install -y stow
-            ;;
-        arch|endeavouros|manjaro)
-            sudo pacman -S --noconfirm --needed stow
-            ;;
-        *)
-            log_error "Unsupported OS for automatic stow installation: ${OS:-unknown}"
-            exit 1
-            ;;
-    esac
-
-    log_success "stow installed"
-}
-
 backup_existing_kde_files() {
     local timestamp
     timestamp=$(date '+%Y%m%d-%H%M%S')
@@ -128,10 +86,6 @@ backup_existing_kde_files() {
             continue
         fi
 
-        if [ -L "$target" ] && [ "$(readlink -f "$target" 2>/dev/null)" = "$(readlink -f "$src" 2>/dev/null)" ]; then
-            continue
-        fi
-
         mkdir -p "$(dirname "$backup_dir/$rel")"
         mv "$target" "$backup_dir/$rel"
         log_info "Backed up $target"
@@ -142,6 +96,68 @@ backup_existing_kde_files() {
         log_success "Existing KDE files backed up to $backup_dir"
     else
         log_success "No conflicting KDE files needed backup"
+    fi
+}
+
+stop_plasma_shell() {
+    if ! pgrep -x plasmashell >/dev/null 2>&1; then
+        return
+    fi
+
+    PLASMA_SHELL_WAS_RUNNING=true
+    log_info "Stopping plasmashell before replacing panel layout..."
+
+    if check_command kquitapp6; then
+        kquitapp6 plasmashell >/dev/null 2>&1 || true
+    elif check_command qdbus6; then
+        qdbus6 org.kde.plasmashell /MainApplication quit >/dev/null 2>&1 || true
+    fi
+
+    local attempt
+    for attempt in 1 2 3 4 5; do
+        pgrep -x plasmashell >/dev/null 2>&1 || break
+        sleep 1
+    done
+
+    if pgrep -x plasmashell >/dev/null 2>&1 && check_command killall; then
+        killall plasmashell >/dev/null 2>&1 || true
+        sleep 1
+    fi
+
+    if pgrep -x plasmashell >/dev/null 2>&1; then
+        log_warning "plasmashell is still running; old panel state may be written back"
+    else
+        log_success "plasmashell stopped"
+    fi
+}
+
+start_plasma_shell() {
+    if [ "$PLASMA_SHELL_WAS_RUNNING" != true ]; then
+        return
+    fi
+
+    if pgrep -x plasmashell >/dev/null 2>&1; then
+        log_success "plasmashell already running"
+        return
+    fi
+
+    if check_command plasmashell; then
+        log_info "Starting plasmashell with the PV Club panel layout..."
+        plasmashell --replace >/dev/null 2>&1 &
+        disown 2>/dev/null || true
+        log_success "plasmashell start requested"
+    else
+        log_warning "plasmashell not found; log out and back in to load the panel layout"
+    fi
+}
+
+copy_kde_settings() {
+    log_info "Copying KDE settings package..."
+    if cp -a "$KDE_DIR/." "$HOME/"; then
+        log_success "KDE settings copied"
+    else
+        log_error "Failed to copy KDE settings"
+        exit 1
     fi
 }
 
@@ -159,7 +175,7 @@ apply_wallpaper() {
             log_warning "Failed to apply desktop wallpaper automatically"
         fi
     else
-        log_warning "plasma-apply-wallpaperimage is unavailable; using stowed KDE wallpaper settings"
+        log_warning "plasma-apply-wallpaperimage is unavailable; using copied KDE wallpaper settings"
     fi
 
     if check_command kwriteconfig6; then
@@ -210,18 +226,15 @@ apply_kde_settings() {
         return 0
     fi
 
+    stop_plasma_shell
+    trap start_plasma_shell EXIT
     backup_existing_kde_files
-
-    log_info "Applying KDE settings with stow..."
-    if stow -d "$DOTFILES_DIR" -t "$HOME" -R kde; then
-        log_success "KDE settings applied"
-    else
-        log_error "Failed to apply KDE settings"
-        exit 1
-    fi
+    copy_kde_settings
 
     apply_wallpaper
     apply_empty_session
+    start_plasma_shell
+    trap - EXIT
 
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
@@ -237,7 +250,6 @@ main() {
     echo ""
 
     ensure_repo
-    ensure_stow
     apply_kde_settings
 }
 

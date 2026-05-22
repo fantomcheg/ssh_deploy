@@ -24,6 +24,10 @@ Optional KDE/Plasma setup is separate from the server deploy:
 bash <(curl -fsSL https://raw.githubusercontent.com/fantomcheg/ssh_deploy/main/install_kde.sh)
 ```
 
+The KDE installer backs up existing Plasma config files, pauses `plasmashell`,
+copies the PV Club panel layout as writable KDE config, and starts Plasma again.
+This avoids merging a live default panel with the saved club layout.
+
 PV Club EndeavourOS workstations use the desktop security layer instead:
 
 ```bash
