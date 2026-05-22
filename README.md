@@ -93,13 +93,14 @@ All tools work seamlessly together and are configured via dotfiles.
 
 `install_pvclub.sh` runs the base deploy, adds club workstation tools recorded from the EndeavourOS setup, and applies KDE settings, the PV Club wallpaper, and Plasma empty-session login mode by default:
 
-- Repository packages: Alacritty, Chromium, Code, OpenJDK 21, Python pip, DNS/network utilities, Wireshark, Nmap/Zenmap, Gobuster, Hashcat, Hydra, John, Masscan, Metasploit, RustScan, SQLMap, tcpdump, WPScan, and ZAP.
+- Repository packages: Alacritty, Chromium, Code, OpenJDK 21, AMD firmware, Python pip, DNS/network utilities, Wireshark, Nmap/Zenmap, Gobuster, Hashcat, Hydra, John, Masscan, Metasploit, RustScan, SQLMap, tcpdump, WPScan, and ZAP.
 - AUR packages through `yay`: Amass, Amnezia VPN, AmneziaWG, Burp Suite, Caido, CyberChef, DirBuster, Feroxbuster, ffuf, gau, Pamac All, waybackurls, Sublime Text, and Telegram Desktop.
 - User setup: Docker remains handled by the base deploy; the club layer adds Wireshark group access when that group exists.
+- GenMachine HDMI setup: the club layer adds the forced 1080p HDMI-A-1 and HDMI-A-2 kernel options to `/etc/kernel/cmdline` once and rebuilds EndeavourOS systemd-boot entries with `reinstall-kernels`.
 - Alacritty setup: the club layer installs the terminal package, and the base deploy stows the repo-managed Alacritty configs into `~/.config/alacritty`.
 - Telegram setup: the club layer opens its MTProto proxy deep link after Telegram Desktop is installed.
 
-Set `PVCLUB_INSTALL_AUR=false` to skip AUR packages or `PVCLUB_INSTALL_KDE=false` to skip KDE settings when testing a smaller install.
+Set `PVCLUB_INSTALL_AUR=false` to skip AUR packages, `PVCLUB_INSTALL_KDE=false` to skip KDE settings, or `PVCLUB_FIX_GENMACHINE_HDMI=false` to skip the club HDMI workaround when testing a smaller install.
 
 Set `PVCLUB_HOSTNAME=pvclub02` when running `install_pvclub.sh` to name a workstation during setup, or run `set_pvclub_hostname.sh --next` afterwards to pick the first apparently free `pvclubNN` name found by local resolution and ping.
 

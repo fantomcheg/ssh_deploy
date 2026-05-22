@@ -23,6 +23,7 @@ DOTFILES_REPO="https://github.com/fantomcheg/ssh_deploy.git"
 DOTFILES_DIR="${SSH_DEPLOY_DIR:-$HOME/ssh_deploy}"
 INSTALL_KDE="${PVCLUB_INSTALL_KDE:-true}"
 INSTALL_AUR="${PVCLUB_INSTALL_AUR:-true}"
+FIX_GENMACHINE_HDMI="${PVCLUB_FIX_GENMACHINE_HDMI:-true}"
 TELEGRAM_MTPROXY_URI="tg://proxy?server=93.77.190.66&port=2443&secret=7koPi9XCIE1vfq3xpvOjjBR5YW5kZXgucnU"
 
 REPO_PACKAGES=(
@@ -30,6 +31,7 @@ REPO_PACKAGES=(
     chromium
     code
     jdk21-openjdk
+    linux-firmware-amdgpu
     python-pip
     whois
     bind
@@ -215,6 +217,42 @@ configure_hostname() {
     bash "$DOTFILES_DIR/set_pvclub_hostname.sh" "$PVCLUB_HOSTNAME"
 }
 
+fix_genmachine_hdmi() {
+    local cmdline="/etc/kernel/cmdline"
+    local normalized
+    local args=(
+        "video=HDMI-A-1:1920x1080@60e"
+        "video=HDMI-A-2:1920x1080@60e"
+    )
+    local arg
+
+    if [ "$FIX_GENMACHINE_HDMI" != true ]; then
+        log_info "Skipping GenMachine HDMI workaround because PVCLUB_FIX_GENMACHINE_HDMI=$FIX_GENMACHINE_HDMI"
+        return
+    fi
+
+    if ! check_command reinstall-kernels; then
+        log_warning "reinstall-kernels not found; skipping GenMachine HDMI kernel cmdline update"
+        return
+    fi
+
+    log_info "Applying GenMachine HDMI workaround"
+    sudo touch "$cmdline"
+
+    for arg in "${args[@]}"; do
+        if ! sudo grep -qwF "$arg" "$cmdline"; then
+            printf ' %s' "$arg" | sudo tee -a "$cmdline" >/dev/null
+        fi
+    done
+
+    normalized=$(sudo cat "$cmdline" | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g;s/^ //;s/ $//')
+    printf '%s\n' "$normalized" | sudo tee "$cmdline" >/dev/null
+
+    log_info "Rebuilding kernel boot entries after HDMI cmdline update"
+    sudo reinstall-kernels
+    log_success "GenMachine HDMI workaround applied"
+}
+
 apply_kde_settings() {
     if [ "$INSTALL_KDE" != true ]; then
         log_info "Skipping KDE settings because PVCLUB_INSTALL_KDE=$INSTALL_KDE"
@@ -243,6 +281,7 @@ main() {
     upgrade_system
     run_base_deploy
     install_repo_packages
+    fix_genmachine_hdmi
     install_aur_packages
     configure_telegram_proxy
     configure_groups
