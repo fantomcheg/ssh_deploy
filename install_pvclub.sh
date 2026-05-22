@@ -26,6 +26,7 @@ INSTALL_AUR="${PVCLUB_INSTALL_AUR:-true}"
 TELEGRAM_MTPROXY_URI="tg://proxy?server=93.77.190.66&port=2443&secret=7koPi9XCIE1vfq3xpvOjjBR5YW5kZXgucnU"
 
 REPO_PACKAGES=(
+    alacritty
     chromium
     code
     python-pip
