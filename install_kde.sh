@@ -162,9 +162,16 @@ copy_kde_settings() {
 }
 
 apply_wallpaper() {
+    local applets_config="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+
     if [ ! -f "$WALLPAPER_PATH" ]; then
         log_warning "PV Club wallpaper is missing at $WALLPAPER_PATH"
         return
+    fi
+
+    if [ -f "$applets_config" ]; then
+        log_info "Replacing saved desktop wallpaper path with the installed PV Club asset..."
+        sed -i "s|^Image=.*pvclub\\.PNG\$|Image=$WALLPAPER_PATH|" "$applets_config"
     fi
 
     if check_command plasma-apply-wallpaperimage; then

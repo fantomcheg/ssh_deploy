@@ -98,6 +98,7 @@ All tools work seamlessly together and are configured via dotfiles.
 - User setup: Docker remains handled by the base deploy; the club layer adds Wireshark group access when that group exists.
 - GenMachine HDMI setup: the club layer adds the forced 1080p HDMI-A-1 and HDMI-A-2 kernel options to `/etc/kernel/cmdline` once and rebuilds EndeavourOS systemd-boot entries with `reinstall-kernels`.
 - Alacritty setup: the club layer installs the terminal package, and the base deploy stows the repo-managed Alacritty configs into `~/.config/alacritty`.
+- Amnezia setup: the club layer opens AmneziaVPN with the PV Club VPN import link after the AUR package step.
 - Telegram setup: the club layer opens its MTProto proxy deep link after Telegram Desktop is installed.
 
 Set `PVCLUB_INSTALL_AUR=false` to skip AUR packages, `PVCLUB_INSTALL_KDE=false` to skip KDE settings, or `PVCLUB_FIX_GENMACHINE_HDMI=false` to skip the club HDMI workaround when testing a smaller install.

@@ -25,6 +25,7 @@ INSTALL_KDE="${PVCLUB_INSTALL_KDE:-true}"
 INSTALL_AUR="${PVCLUB_INSTALL_AUR:-true}"
 FIX_GENMACHINE_HDMI="${PVCLUB_FIX_GENMACHINE_HDMI:-true}"
 TELEGRAM_MTPROXY_URI="tg://proxy?server=93.77.190.66&port=2443&secret=7koPi9XCIE1vfq3xpvOjjBR5YW5kZXgucnU"
+AMNEZIA_VPN_URI='vpn://AAALUXjatVbdTuM4FL7nKapq7oDWdmwnQcNInQJDKZQOZejMklGVJg6EpkmUpAWKkOZV9hVW2vdg32j8k7apMBesNOHHJ9_3-fjY59jx01aNP3UviQs3jFmW1_dq1xITz9PKkir3_obTm6AkjiHH64QgahEE7F2ICbYANZBV39GokVBDgrBl2bZJdiGFJqaIIlsrN4ScuzUooADQXQQN2wLAtqBWjqUcYhMQanLvyrQowjp5R4b-MauhTx_HNfBgEe4aAFj-qYdSmxrUo4FJKAYGtwPqg5XOA8Cr9oGAuLzB2CeWYRrmJ-3AchW0jPEmg99kyFvMiScYqqWm7oNMHNCzYSwTpWUHUHF6UmUYEy0ppweRlpMThNrERm5ejHihBqGowvqTEwvY4cXn8HdHW35OfWclQ0qmrbuqzlA6bcFVdbjU6SqtouuU4f3hEquOWM60ChmvIfwaIq-gE09BtIrxsimXHGzAYVwucRUewCW4gS6zgUkVLcOEqAqWgcLq6rtRlNwzfxSmuWCvFa440JA_zfV4Ct_bE5BCfq48eVHI4qLjl9l8vD8axykcXJ5fjW9_HNxM24tefnpLu13cm3298sjnL4tpOjl6yPcr4SgnPJrlXBtWAzbM14o0C-ejCXtUuqJJ5l3w7eSULBaUzLpHPb-7fW5sM_M08LPm5cI4OzavvIFNDzWjpbPx2tX_DVzuJ-XiuhMXLAtcj_10nLjl-xnL89p-bTmbpoE4ftAbcOxD_6Jz1rr4MeKvO7UPg8P2ee-gfOeiPp-mW7Aue-Tad83SiU883ocKgxeUHF7a7gO3ibAHUKLSRMLkNcRNQ5giwgEWFuTWsVBqzwXOya7aw4CTwpn-BOCk8K_f9k7cEUP-6b3OhxHRi9YoW1y2RLX897rPWCYy2Z-No9BTuZiCWfKVNhdnKOiD6WVw2exNho-3J5N26_4gGXbxX7NtlgadCLX2ZR5ZfutmzFe9WwfB8G54c9o73ja_B20WDKfEPetHX26iu2_F53l6cXN-dTe-zCcd0bulNmmnL6potSt3anIjOvFh7KdJGBectFGDgoZJGsYeNgxbsH1-GQnzghd6l7HUjcI5E8suUl2p39skL3rulKkKXrupSKbFbHmqWNUjKF0NwHcRS0dyiHIzVQ-lNMkKAcvA1mg-WW--d63L2nPOsjnLNvfxuxLED7NnJ9Z9LEXQ4ispg9YKsqRIvCQazcUyJPJLr_0k57NxzIqRq44D9dGX54HWbZG5cS4GH8kBhHzmp_UN4fNmv_XlU6jdacwWobvL75po3e15Sx3a6rbqs8CdRUX7zX4rXe5lYVqU03v5--Xf_369_CP-1-BKFOfqKmOiBrIbsiG4wqq7jKzeVadl2QlqXXT1reet31VnwJg'
 
 REPO_PACKAGES=(
     alacritty
@@ -193,6 +194,18 @@ configure_telegram_proxy() {
     log_success "Telegram started with the proxy link"
 }
 
+configure_amnezia_connection() {
+    if ! check_command AmneziaVPN; then
+        log_warning "AmneziaVPN not found; skipping PV Club VPN import launch"
+        return
+    fi
+
+    log_info "Opening AmneziaVPN with the PV Club VPN import link..."
+    AmneziaVPN --import "$AMNEZIA_VPN_URI" >/dev/null 2>&1 &
+    disown 2>/dev/null || true
+    log_success "AmneziaVPN import launch requested"
+}
+
 run_base_deploy() {
     log_info "Running base ssh_deploy setup"
     SSH_DEPLOY_NO_EXEC_ZSH=true bash "$DOTFILES_DIR/deploy.sh"
@@ -283,6 +296,7 @@ main() {
     install_repo_packages
     fix_genmachine_hdmi
     install_aur_packages
+    configure_amnezia_connection
     configure_telegram_proxy
     configure_groups
     configure_hostname
