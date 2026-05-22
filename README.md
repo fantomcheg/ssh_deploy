@@ -87,7 +87,7 @@ All tools work seamlessly together and are configured via dotfiles.
 
 ### PV Club EndeavourOS Layer
 
-`install_pvclub.sh` runs the base deploy, adds club workstation tools recorded from the EndeavourOS setup, and applies KDE settings and the PV Club wallpaper by default:
+`install_pvclub.sh` runs the base deploy, adds club workstation tools recorded from the EndeavourOS setup, and applies KDE settings, the PV Club wallpaper, and Plasma empty-session login mode by default:
 
 - Repository packages: Chromium, Code, Python pip, DNS/network utilities, Wireshark, Nmap/Zenmap, Gobuster, Hashcat, Hydra, John, Masscan, Metasploit, RustScan, SQLMap, tcpdump, WPScan, and ZAP.
 - AUR packages through `yay`: Amass, Amnezia VPN, AmneziaWG, Burp Suite, Caido, CyberChef, DirBuster, Feroxbuster, ffuf, gau, Pamac All, waybackurls, and Sublime Text.

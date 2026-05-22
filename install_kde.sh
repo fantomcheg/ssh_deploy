@@ -189,6 +189,19 @@ apply_wallpaper() {
     fi
 }
 
+apply_empty_session() {
+    if ! check_command kwriteconfig6; then
+        log_warning "kwriteconfig6 is unavailable; empty Plasma session mode was not configured"
+        return
+    fi
+
+    log_info "Configuring Plasma to start with an empty session..."
+    kwriteconfig6 --file ksmserverrc \
+        --group General \
+        --key loginMode emptySession
+    log_success "Empty Plasma session mode applied"
+}
+
 apply_kde_settings() {
     if [ ! -d "$KDE_DIR" ]; then
         log_warning "No kde package found in $DOTFILES_DIR"
@@ -208,6 +221,7 @@ apply_kde_settings() {
     fi
 
     apply_wallpaper
+    apply_empty_session
 
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
