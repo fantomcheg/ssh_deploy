@@ -25,6 +25,8 @@ DOTFILES_REPO="https://github.com/fantomcheg/ssh_deploy.git"
 DOTFILES_DIR="$HOME/ssh_deploy"
 LOCAL_BIN="$HOME/.local/bin"
 LOCAL_SHARE="$HOME/.local/share"
+OPENVPN_PROFILE_NAME="eu-central-1-xRapid-regular.ovpn"
+OPENVPN_CONFIG_DIR="$HOME/.config/openvpn"
 
 # Logging
 LOG_FILE="$HOME/ssh_deploy_install.log"
@@ -57,6 +59,7 @@ INSTALL_BROOT=true
 INSTALL_NERD_FONT=true
 INSTALL_SECLISTS=true
 INSTALL_GOBUSTER=true
+INSTALL_OPENVPN=true
 
 # Helper functions
 init_logging() {
@@ -215,6 +218,7 @@ install_essential_packages() {
             if $INSTALL_JQ; then install_package "jq"; fi
             if $INSTALL_RIPGREP; then install_package "ripgrep"; fi
             if $INSTALL_MTR; then install_package "mtr"; fi
+            if $INSTALL_OPENVPN; then install_package "openvpn"; fi
             ;;
         arch|endeavouros|manjaro)
             log_to_file "INFO" "Running: sudo pacman -Sy"
@@ -250,6 +254,7 @@ install_essential_packages() {
             if $INSTALL_JQ; then install_package "jq"; fi
             if $INSTALL_RIPGREP; then install_package "ripgrep"; fi
             if $INSTALL_MTR; then install_package "mtr"; fi
+            if $INSTALL_OPENVPN; then install_package "openvpn"; fi
             ;;
         *)
             log_warning "Unsupported OS ($OS) - skipping package installation"
@@ -843,6 +848,30 @@ create_fd_bat_symlinks() {
     fi
 }
 
+setup_openvpn_profile() {
+    if ! $INSTALL_OPENVPN; then
+        return
+    fi
+
+    log_info "Setting up OpenVPN profile..."
+
+    local source_profile="$HOME/$OPENVPN_PROFILE_NAME"
+    local target_profile="$OPENVPN_CONFIG_DIR/$OPENVPN_PROFILE_NAME"
+
+    if [ ! -f "$source_profile" ]; then
+        log_warning "Local OpenVPN profile not found: $source_profile"
+        return
+    fi
+
+    mkdir -p "$OPENVPN_CONFIG_DIR"
+    if cp "$source_profile" "$target_profile"; then
+        chmod 600 "$target_profile" 2>/dev/null || true
+        log_success "OpenVPN profile installed to $target_profile"
+    else
+        log_warning "Failed to install OpenVPN profile"
+    fi
+}
+
 clone_dotfiles() {
     log_info "Cloning dotfiles repository..."
     
@@ -973,6 +1002,8 @@ print_summary() {
     check_command mtr && echo -e "  ${GREEN}✓${NC} mtr (network diagnostic)"
     check_command stow && echo -e "  ${GREEN}✓${NC} stow"
     check_command docker && echo -e "  ${GREEN}✓${NC} docker"
+    check_command openvpn && echo -e "  ${GREEN}✓${NC} openvpn"
+    [ -f "$OPENVPN_CONFIG_DIR/$OPENVPN_PROFILE_NAME" ] && echo -e "  ${GREEN}✓${NC} OpenVPN profile: $OPENVPN_CONFIG_DIR/$OPENVPN_PROFILE_NAME"
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
     [ -d "$HOME/.pyenv" ] && echo -e "  ${GREEN}✓${NC} pyenv (Python version manager)"
     check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree viewer)"
@@ -1047,6 +1078,7 @@ main() {
     clone_dotfiles
     setup_path
     stow_packages
+    setup_openvpn_profile
     
     # Create symlinks for fd/bat after stow
     create_fd_bat_symlinks

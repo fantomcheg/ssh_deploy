@@ -55,6 +55,7 @@ If process substitution is unavailable, download `install_pvclub.sh` to a unique
   - Includes docker-compose plugin
 - **tmux** - Terminal multiplexer (Catppuccin theme, TPM plugins)
 - **alacritty** - GPU-accelerated terminal emulator (Dracula theme, tmux integration)
+- **openvpn** - VPN client; if `~/eu-central-1-xRapid-regular.ovpn` exists, deploy copies it to `~/.config/openvpn/`
 
 ### Development Environment
 - **pyenv** - Python version manager
@@ -186,6 +187,13 @@ Installs tmux terminal multiplexer:
 - Installs via apt (requires sudo)
 - Uses default configuration
 - Skips if no sudo available
+
+##### **setup_openvpn_profile()**
+Installs the bundled OpenVPN profile:
+- Installs the `openvpn` package through the system package manager
+- Copies local `~/eu-central-1-xRapid-regular.ovpn` to `~/.config/openvpn/` when present
+- Sets profile permissions to `600`
+- Connect with `sudo openvpn --config ~/.config/openvpn/eu-central-1-xRapid-regular.ovpn`
 
 ##### **install_docker()**
 Installs Docker container platform:
