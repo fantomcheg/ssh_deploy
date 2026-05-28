@@ -55,6 +55,8 @@ INSTALL_MTR=true
 INSTALL_PYENV=true
 INSTALL_BROOT=true
 INSTALL_NERD_FONT=true
+INSTALL_SECLISTS=true
+INSTALL_GOBUSTER=true
 
 # Helper functions
 init_logging() {
@@ -659,6 +661,41 @@ install_broot() {
     fi
 }
 
+install_security_tools() {
+    if ! $INSTALL_SECLISTS && ! $INSTALL_GOBUSTER; then
+        return
+    fi
+
+    log_info "Setting up security tools..."
+
+    case $OS in
+        arch|endeavouros|manjaro)
+            if ! check_command yay; then
+                log_warning "yay not found - skipping seclists/gobuster installation"
+                return
+            fi
+
+            local packages=()
+            $INSTALL_SECLISTS && packages+=("seclists")
+            $INSTALL_GOBUSTER && packages+=("gobuster")
+
+            if [ ${#packages[@]} -eq 0 ]; then
+                return
+            fi
+
+            log_info "Installing security tools with yay: ${packages[*]}"
+            if yay -S --noconfirm --needed "${packages[@]}" >> "$LOG_FILE" 2>&1; then
+                log_success "Security tools installed: ${packages[*]}"
+            else
+                log_warning "Failed to install security tools with yay: ${packages[*]}"
+            fi
+            ;;
+        *)
+            log_warning "Security tools via yay are supported only on Arch-based systems"
+            ;;
+    esac
+}
+
 install_fastfetch() {
     if ! $INSTALL_FASTFETCH; then
         return
@@ -939,6 +976,8 @@ print_summary() {
     check_command mc && echo -e "  ${GREEN}✓${NC} mc (Midnight Commander)"
     [ -d "$HOME/.pyenv" ] && echo -e "  ${GREEN}✓${NC} pyenv (Python version manager)"
     check_command broot && echo -e "  ${GREEN}✓${NC} broot (tree viewer)"
+    check_command gobuster && echo -e "  ${GREEN}✓${NC} gobuster (directory/DNS/vhost brute forcing)"
+    [ -d "/usr/share/seclists" ] && echo -e "  ${GREEN}✓${NC} seclists (wordlists)"
     ([ -f "$LOCAL_SHARE/fonts/JetBrainsMonoNerdFont-Regular.ttf" ] || (check_command fc-list && fc-list | grep -qi "JetBrainsMono Nerd Font")) && echo -e "  ${GREEN}✓${NC} JetBrainsMono Nerd Font"
     echo ""
     echo -e "${CYAN}Next steps:${NC}"
@@ -994,6 +1033,7 @@ main() {
     install_tmux
     install_pyenv
     install_broot
+    install_security_tools
     install_nerd_font
     # install_fastfetch - disabled, causes issues
     install_docker

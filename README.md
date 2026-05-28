@@ -88,6 +88,10 @@ If process substitution is unavailable, download `install_pvclub.sh` to a unique
 - **mtr** - Network diagnostic tool (combines ping and traceroute)
 - **dog** - Modern DNS client (better dig alternative)
 
+### Security Tools
+- **seclists** - Wordlists for discovery and testing (Arch-based systems via `yay`)
+- **gobuster** - Directory, DNS, and virtual host brute forcing tool (Arch-based systems via `yay`)
+
 All tools work seamlessly together and are configured via dotfiles.
 
 ### PV Club EndeavourOS Layer
@@ -238,6 +242,12 @@ Installs broot tree-view file manager:
 - Installs to ~/.local/bin/broot
 - Uses repo-managed `br` shell function from `.zshrc`
 - Includes custom nnn-style color theme via stow
+
+##### **install_security_tools()**
+Installs security tools on Arch-based systems:
+- Uses `yay -S --noconfirm --needed seclists gobuster`
+- Skips gracefully when `yay` is not installed
+- Adds seclists wordlists and gobuster
 
 #### 3. **Dotfiles Management**
 
