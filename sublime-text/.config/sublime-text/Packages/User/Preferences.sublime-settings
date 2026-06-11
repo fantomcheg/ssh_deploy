@@ -1,0 +1,11 @@
+{
+	"color_scheme": "Packages/Material Theme/schemes/Material-Theme-Darker.tmTheme",
+	"ignored_packages":
+	[ "Vintage",
+	],
+	"theme": "Spacegray Oceanic.sublime-theme",
+	"font_size": 14,
+	"ui_scale": 1.5,
+	"font_face": "Fira Code",
+	"index_files": true,
+}

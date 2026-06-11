@@ -1,0 +1,3 @@
+[
+	{ "keys": ["ctrl+n"], "command": "new_file" }
+]

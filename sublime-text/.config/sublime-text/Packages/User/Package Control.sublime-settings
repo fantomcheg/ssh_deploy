@@ -1,0 +1,19 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"Babel",
+		"BracketHighlighter",
+		"ImagePaste",
+		"JsPrettier",
+		"LSP-typescript",
+		"Material Theme",
+		"Package Control",
+		"SublimeLinter-eslint",
+		"Theme - Spacegray",
+		"Vintageous",
+	],
+}

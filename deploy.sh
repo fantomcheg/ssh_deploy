@@ -913,6 +913,7 @@ stow_packages() {
     $INSTALL_BROOT && [ -d "broot" ] && packages+=("broot")
     [ -d "tmux" ] && packages+=("tmux")
     [ -d "alacritty" ] && packages+=("alacritty")
+    [ -d "sublime-text" ] && packages+=("sublime-text")
     
     for package in "${packages[@]}"; do
         if [ -d "$package" ]; then
